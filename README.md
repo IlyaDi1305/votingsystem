@@ -5,7 +5,7 @@ This is a REST API built with Spring Boot for a voting system where users can de
 
 - **Admins** can:
   - Add and update restaurants.
-  - Add and update daily menus for restaurants.
+  - Add and update daily menuItems for restaurants.
 - **Users** can:
   - Vote for a restaurant where they want to have lunch.
   - Change their vote before 11:00 AM. After that, votes cannot be changed.
@@ -21,7 +21,7 @@ The project is designed for backend use only and assumes a frontend will be buil
 
 ### Admins
 - Add, update, and delete restaurants.
-- Add, update, and delete daily menus for restaurants.
+- Add, update, and delete daily menuItems for restaurants.
 
 ---
 

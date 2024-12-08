@@ -1,73 +1,76 @@
 package ru.didorenko.votingsystem.restaurant.web;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.restaurant.model.Restaurant;
-import ru.didorenko.votingsystem.restaurant.service.RestaurantService;
+import ru.didorenko.votingsystem.restaurant.repository.RestaurantRepository;
+import ru.didorenko.votingsystem.restaurant.to.RestaurantTo;
+import ru.didorenko.votingsystem.restaurant.utill.RestaurantUtill;
 
+import java.net.URI;
 import java.util.List;
 
+import static ru.didorenko.votingsystem.common.validation.ValidationUtil.assureIdConsistent;
+import static ru.didorenko.votingsystem.common.validation.ValidationUtil.checkNew;
+
+
+@Slf4j
 @RestController
-@RequestMapping("/api/admin/restaurants")
-@AllArgsConstructor
+@RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestaurantController {
 
-    private RestaurantService restaurantService;
+    @Autowired
+    protected RestaurantRepository repository;
 
-    @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> getRestaurant(@PathVariable("id") Integer restaurantId) {
-        if (restaurantId == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        Restaurant restaurant = restaurantService.getById(restaurantId);
-        if (restaurant == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(restaurant, HttpStatus.OK);
+    static final String REST_URL = "api/admin/restaurants";
+
+    @GetMapping("/{id}")
+    public Restaurant get(int id) {
+        log.info("get {}", id);
+        return repository.getExisted(id);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> saveRestaurant(@RequestBody @Valid Restaurant restaurant) {
-        HttpHeaders headers = new HttpHeaders();
-        if (restaurant == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        this.restaurantService.save(restaurant);
-        return new ResponseEntity<>(restaurant, headers, HttpStatus.CREATED);
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(int id) {
+        log.info("delete {}", id);
+        repository.deleteExisted(id);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> updateRestaurant(@RequestBody @Valid Restaurant restaurant) {
-        HttpHeaders headers = new HttpHeaders();
-        if (restaurant == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
-        this.restaurantService.save(restaurant);
-        return new ResponseEntity<>(restaurant, headers, HttpStatus.OK);
+    @GetMapping
+    public List<Restaurant> getAll() {
+        log.info("getAll");
+        return repository.findAll();
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Restaurant> deleteRestaurant(@PathVariable("id") Integer id) {
-        Restaurant restaurant = this.restaurantService.getById(id);
-        if (restaurant == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        this.restaurantService.delete(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Restaurant> create(@Valid @RequestBody RestaurantTo restaurantTo) {
+        log.info("create {}", restaurantTo);
+        checkNew(restaurantTo);
+        Restaurant created = repository.save(RestaurantUtill.createNewFromTo(restaurantTo));
+        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                        .path(REST_URL).build().toUri();
+        return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
-        List<Restaurant> restaurants = this.restaurantService.getAll();
-        if (restaurants.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(restaurants, HttpStatus.OK);
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody @Valid RestaurantTo restaurantTo, Restaurant restaurant) {
+        log.info("update {} with id={}", restaurant, restaurant.getId());
+        assureIdConsistent(restaurantTo, restaurant.id());
+        repository.save(RestaurantUtill.updateFromTo(restaurant, restaurantTo));
+    }
+
+    @GetMapping("/by-name")
+    public Restaurant getByName(@RequestParam String name) {
+        log.info("getByEmail {}", name);
+        return repository.getExistedByName(name);
     }
 }
