@@ -31,7 +31,7 @@ public class AdminRestaurantController {
     static final String REST_URL = "api/admin/restaurants";
 
     @GetMapping("/{id}")
-    public Restaurant get(int id) {
+    public Restaurant get(@PathVariable int id) {
         log.info("get {}", id);
         return repository.getExisted(id);
     }

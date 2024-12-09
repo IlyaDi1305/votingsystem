@@ -12,3 +12,9 @@ INSERT INTO RESTAURANT (name)
 VALUES ('McDonalds'),
        ('Pizzeria Bacco'),
        ('Taj im Taunus');
+
+INSERT INTO MENU_ITEM (name, description, price, date, restaurant_id)
+VALUES ('Burger', 'brotchen, fleisch', 7.55, now(), 1),
+       ('Cola', 'zuker, wasser', 4.15, now(), 1),
+       ('Pizza Salami', 'salami', 8.20, now(),2),
+       ('Misosup', 'wasser, soya', 12.90, now(),3);

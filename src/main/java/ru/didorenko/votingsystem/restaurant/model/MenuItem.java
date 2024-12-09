@@ -1,10 +1,12 @@
 package ru.didorenko.votingsystem.restaurant.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +19,7 @@ import java.time.LocalDate;
 @Table(name = "menu_item")
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MenuItem extends NamedEntity {
 
     @Column(name = "description")
@@ -37,6 +39,7 @@ public class MenuItem extends NamedEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "restaurant_id")
+    @Schema(hidden = true)
     private Restaurant restaurant;
 
     public MenuItem(Integer id, String name, String description, @NotNull Double price, @NotNull LocalDate date) {
@@ -44,5 +47,16 @@ public class MenuItem extends NamedEntity {
         this.description = description;
         this.price = price;
         this.date = date;
+    }
+
+    @Override
+    public String toString(){
+        return "MenuItem{" +
+                "description='" + description + '\'' +
+                ", price=" + price +
+                ", date=" + date +
+                ", name=" + name +
+                ", id=" + id +
+                '}';
     }
 }

@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.didorenko.votingsystem.common.BaseRepository;
 import ru.didorenko.votingsystem.common.error.NotFoundException;
 import ru.didorenko.votingsystem.restaurant.model.Restaurant;
-import ru.didorenko.votingsystem.user.model.User;
 
 import java.util.Optional;
 
