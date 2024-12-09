@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.didorenko.votingsystem.common.BaseRepository;
 import ru.didorenko.votingsystem.common.error.NotFoundException;
 import ru.didorenko.votingsystem.restaurant.model.MenuItem;
+
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,4 +35,9 @@ public interface MenuItemRepository extends BaseRepository<MenuItem> {
             throw new NotFoundException("Menu item not found or does not belong to restaurant with id=" + restaurantId);
         }
     }
+
+    @Query("SELECT m FROM MenuItem m WHERE m.restaurant.id = :restaurantId AND m.date = :date")
+    List<MenuItem> findAllByRestaurantIdAndDishDate(@Param("restaurantId") int restaurantId,
+                                                    @Param("date") LocalDate date);
+
 }
