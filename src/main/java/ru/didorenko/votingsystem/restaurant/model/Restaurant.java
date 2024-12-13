@@ -18,17 +18,12 @@ import java.util.List;
 @Table(name = "restaurant")
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 public class Restaurant extends NamedEntity {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<MenuItem> menuItems;
-
-    public Restaurant(Restaurant r) {
-        this(r.id, r.name);
-    }
 
     public Restaurant(Integer id, String name) {
         super(id, name);

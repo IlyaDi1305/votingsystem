@@ -10,15 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.restaurant.model.Restaurant;
 import ru.didorenko.votingsystem.restaurant.repository.RestaurantRepository;
-import ru.didorenko.votingsystem.restaurant.to.RestaurantTo;
 import ru.didorenko.votingsystem.restaurant.utill.RestaurantUtill;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
-import static ru.didorenko.votingsystem.common.validation.ValidationUtil.assureIdConsistent;
-import static ru.didorenko.votingsystem.common.validation.ValidationUtil.checkNew;
-
+import static ru.didorenko.votingsystem.restaurant.utill.RestaurantUtill.updateWithName;
 
 @Slf4j
 @RestController
@@ -36,41 +34,55 @@ public class AdminRestaurantController {
         return repository.getExisted(id);
     }
 
-    @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(int id) {
-        log.info("delete {}", id);
-        repository.deleteExisted(id);
-    }
-
     @GetMapping
     public List<Restaurant> getAll() {
         log.info("getAll");
         return repository.findAll();
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Restaurant> create(@Valid @RequestBody RestaurantTo restaurantTo) {
-        log.info("create {}", restaurantTo);
-        checkNew(restaurantTo);
-        Restaurant created = repository.save(RestaurantUtill.createNewFromTo(restaurantTo));
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                        .path(REST_URL).build().toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
-    }
-
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody @Valid RestaurantTo restaurantTo, Restaurant restaurant) {
-        log.info("update {} with id={}", restaurant, restaurant.getId());
-        assureIdConsistent(restaurantTo, restaurant.id());
-        repository.save(RestaurantUtill.updateFromTo(restaurant, restaurantTo));
-    }
-
     @GetMapping("/by-name")
     public Restaurant getByName(@RequestParam String name) {
         log.info("getByEmail {}", name);
         return repository.getExistedByName(name);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> create(@RequestParam @Valid String name) {
+        log.info("create restaurant with name: {}", name);
+        if (repository.getExistedByNameNot(name).isEmpty()) {
+            Restaurant created = repository.save(RestaurantUtill.createNewWithName(name));
+            URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path(REST_URL).build().toUri();
+            return ResponseEntity.created(uriOfNewResource).body(created);
+        }
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body("Restaurant with name '" + name + "' already exists");
+    }
+
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestParam @Valid String newName) {
+        log.info("update restaurant with id: {} ", id);
+        Optional<Restaurant> existingRestaurant = repository.findById(id);
+        if (existingRestaurant.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Restaurant with id '" + id + "' not found");
+        }
+        if (repository.getExistedByNameNot(newName).isPresent() &&
+                !existingRestaurant.get().getName().equalsIgnoreCase(newName)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Another restaurant with name '" + newName + "' already exists");
+        }
+        Restaurant updated = repository.save(updateWithName(existingRestaurant.get(), newName));
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(int id) {
+        log.info("delete {}", id);
+        repository.deleteExisted(id);
     }
 }
