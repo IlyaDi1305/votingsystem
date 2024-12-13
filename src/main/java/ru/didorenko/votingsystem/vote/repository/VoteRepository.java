@@ -22,9 +22,9 @@ public interface VoteRepository extends BaseRepository<Vote> {
     Optional<Vote> findByUserIdAndDate(Integer userId, LocalDate date);
 
     @Transactional
-    default Vote prepareAndSave(Vote vote, Restaurant restaurant) {
+    default void updateAndSave(Vote vote, Restaurant restaurant) {
         vote.setTime(LocalTime.now().truncatedTo(ChronoUnit.MINUTES));
         vote.setRestaurant(restaurant);
-        return save(vote);
+        save(vote);
     }
 }

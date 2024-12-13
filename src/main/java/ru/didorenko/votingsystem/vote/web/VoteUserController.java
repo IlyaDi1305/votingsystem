@@ -69,6 +69,6 @@ public class VoteUserController {
         if (LocalTime.now().isAfter(deadline)) {
             throw new IllegalStateException("Vote cannot be changed after 11:00 AM.");
         }
-        voteRepository.prepareAndSave(existingVote, restaurantRepository.getExisted(restaurantId));
+        voteRepository.updateAndSave(existingVote, restaurantRepository.getExisted(restaurantId));
     }
 }
