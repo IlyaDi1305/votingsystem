@@ -12,11 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
-@RestController
-@RequestMapping(value = UserMenuController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-public class UserMenuController {
-
-    static final String REST_URL = UserRestaurantController.REST_URL + "/{restaurantId}/menuItems";
+public abstract class AbstractMenuItemController {
 
     @Autowired
     protected MenuItemRepository repository;
@@ -28,8 +24,8 @@ public class UserMenuController {
     }
 
     @GetMapping(value = "/by-date", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<MenuItem> getMenuByDate(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                                        @PathVariable int restaurantId) {
+    public List<MenuItem> getMenuByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                        @RequestParam int restaurantId) {
         log.info("get menu for restaurant {} on date {}", restaurantId, date);
         return repository.findAllByRestaurantIdAndDishDate(restaurantId, date);
     }

@@ -1,6 +1,8 @@
 package ru.didorenko.votingsystem.user.web;
 
 import jakarta.validation.Valid;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,24 +27,30 @@ public class AdminUserController extends AbstractUserController {
 
     @Override
     @GetMapping("/{id}")
+    @Cacheable(value = "usersCache", key = "#id")
     public User get(@PathVariable int id) {
+        log.info("Fetching user by id: {}", id);
         return super.get(id);
     }
 
     @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(value = "usersCache", key = "#id")
     public void delete(@PathVariable int id) {
         super.delete(id);
     }
 
     @GetMapping
+    @Cacheable(value = "usersCache", key = "'allUsers'")
     public List<User> getAll() {
-        log.info("getAll");
+        log.info("Fetching all users from database");
         return repository.findAll(Sort.by(Sort.Direction.ASC, "name", "email"));
     }
 
+
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @CacheEvict(value = "usersCache", allEntries = true)
     public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user) {
         log.info("create {}", user);
         checkNew(user);
@@ -55,6 +63,7 @@ public class AdminUserController extends AbstractUserController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @CacheEvict(value = "usersCache", key = "#id")
     public void update(@Valid @RequestBody User user, @PathVariable int id) {
         log.info("update {} with id={}", user, id);
         assureIdConsistent(user, id);
@@ -62,14 +71,16 @@ public class AdminUserController extends AbstractUserController {
     }
 
     @GetMapping("/by-email")
+    @Cacheable(value = "usersCache", key = "#email")
     public User getByEmail(@RequestParam String email) {
-        log.info("getByEmail {}", email);
+        log.info("Fetching user by email: {}", email);
         return repository.getExistedByEmail(email);
     }
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Transactional
+    @CacheEvict(value = "usersCache", key = "#id")
     public void enable(@PathVariable int id, @RequestParam boolean enabled) {
         log.info(enabled ? "enable {}" : "disable {}", id);
         User user = repository.getExisted(id);

@@ -42,13 +42,6 @@ public class MenuItem extends NamedEntity {
     @Schema(hidden = true)
     private Restaurant restaurant;
 
-    public MenuItem(Integer id, String name, String description, @NotNull Double price, @NotNull LocalDate date) {
-        super(id, name);
-        this.description = description;
-        this.price = price;
-        this.date = date;
-    }
-
     @Override
     public String toString(){
         return "MenuItem{" +

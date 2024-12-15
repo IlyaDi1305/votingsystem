@@ -2,37 +2,37 @@ package ru.didorenko.votingsystem.restaurant.web;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import ru.didorenko.votingsystem.restaurant.model.Restaurant;
 import ru.didorenko.votingsystem.restaurant.repository.RestaurantRepository;
 
 import java.util.List;
+
 @Slf4j
-@RestController
-@RequestMapping(value = UserRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-public class UserRestaurantController {
+public abstract class AbstractRestaurantController {
 
     @Autowired
     protected RestaurantRepository repository;
 
-    static final String REST_URL = "api/user/restaurants";
-
     @GetMapping("/{id}")
+    @Cacheable(value = "restaurantCache", key = "#id")
     public Restaurant get(@PathVariable int id) {
         log.info("get {}", id);
         return repository.getExisted(id);
     }
 
     @GetMapping
+    @Cacheable(value = "restaurantsCache", key = "'allRestaurants'")
     public List<Restaurant> getAll() {
         log.info("getAll");
         return repository.findAll();
     }
 
     @GetMapping("/by-name")
+    @Cacheable(value = "restaurantCache", key = "#name")
     public Restaurant getByName(@RequestParam String name) {
-        log.info("getByEmail {}", name);
+        log.info("getByName {}", name);
         return repository.getExistedByName(name);
     }
 }

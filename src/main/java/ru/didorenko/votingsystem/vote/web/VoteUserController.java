@@ -2,6 +2,8 @@ package ru.didorenko.votingsystem.vote.web;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,7 @@ public class VoteUserController {
 
 
     @GetMapping
+    @Cacheable(value = "votesCache", key = "#user.id")
     public List<VoteTo> getAllByUserId(@AuthenticationPrincipal AuthUser user) {
         log.info("getAllByUserId");
         return createToList(voteRepository.getAllByUserId(user.id()));
@@ -44,6 +47,7 @@ public class VoteUserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @CacheEvict(value = "votesCache", key = "#user.id")
     public ResponseEntity<Vote> create(@RequestParam  Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
         LocalDate today = LocalDate.now();
         log.info("create vote with restaurantId {}" , restaurantId);
@@ -60,6 +64,7 @@ public class VoteUserController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
+    @CacheEvict(value = "votesCache", key = "#user.id")
     public void update(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
         log.info("update vote with restaurantId {}" , restaurantId);
         LocalDate today = LocalDate.now();

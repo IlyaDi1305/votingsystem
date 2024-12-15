@@ -1,19 +1,18 @@
-package ru.didorenko.votingsystem.restaurant.web;
+package ru.didorenko.votingsystem.restaurant.web.AdminController;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.restaurant.model.Restaurant;
-import ru.didorenko.votingsystem.restaurant.repository.RestaurantRepository;
 import ru.didorenko.votingsystem.restaurant.utill.RestaurantUtill;
+import ru.didorenko.votingsystem.restaurant.web.AbstractRestaurantController;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 
 import static ru.didorenko.votingsystem.restaurant.utill.RestaurantUtill.updateWithName;
@@ -21,33 +20,13 @@ import static ru.didorenko.votingsystem.restaurant.utill.RestaurantUtill.updateW
 @Slf4j
 @RestController
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-public class AdminRestaurantController {
-
-    @Autowired
-    protected RestaurantRepository repository;
+public class AdminRestaurantController extends AbstractRestaurantController {
 
     static final String REST_URL = "api/admin/restaurants";
 
-    @GetMapping("/{id}")
-    public Restaurant get(@PathVariable int id) {
-        log.info("get {}", id);
-        return repository.getExisted(id);
-    }
-
-    @GetMapping
-    public List<Restaurant> getAll() {
-        log.info("getAll");
-        return repository.findAll();
-    }
-
-    @GetMapping("/by-name")
-    public Restaurant getByName(@RequestParam String name) {
-        log.info("getByEmail {}", name);
-        return repository.getExistedByName(name);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @CacheEvict(value = "restaurantsCache", allEntries = true)
     public ResponseEntity<?> create(@RequestParam @Valid String name) {
         log.info("create restaurant with name: {}", name);
         if (repository.getExistedByNameNot(name).isEmpty()) {
@@ -60,9 +39,9 @@ public class AdminRestaurantController {
                 .body("Restaurant with name '" + name + "' already exists");
     }
 
-
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @CacheEvict(value = "restaurantsCache", allEntries = true)
     public ResponseEntity<?> update(@PathVariable Integer id, @RequestParam @Valid String newName) {
         log.info("update restaurant with id: {} ", id);
         Optional<Restaurant> existingRestaurant = repository.findById(id);
@@ -79,9 +58,10 @@ public class AdminRestaurantController {
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(int id) {
+    @CacheEvict(value = "restaurantsCache", allEntries = true)
+    public void delete(@PathVariable int id) {
         log.info("delete {}", id);
         repository.deleteExisted(id);
     }
