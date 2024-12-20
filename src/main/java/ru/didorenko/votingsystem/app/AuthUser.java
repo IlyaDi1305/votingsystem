@@ -2,12 +2,12 @@ package ru.didorenko.votingsystem.app;
 
 import lombok.Getter;
 import org.springframework.lang.NonNull;
-import ru.didorenko.votingsystem.user.model.Role;
-import ru.didorenko.votingsystem.user.model.User;
+import ru.didorenko.votingsystem.model.Role;
+import ru.didorenko.votingsystem.model.User;
 
+@Getter
 public class AuthUser extends org.springframework.security.core.userdetails.User {
 
-    @Getter
     private final User user;
 
     public AuthUser(@NonNull User user) {

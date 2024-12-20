@@ -14,11 +14,15 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.didorenko.votingsystem.app.AuthUser;
-import ru.didorenko.votingsystem.user.model.Role;
-import ru.didorenko.votingsystem.user.model.User;
-import ru.didorenko.votingsystem.user.repository.UserRepository;
+import ru.didorenko.votingsystem.model.Role;
+import ru.didorenko.votingsystem.model.User;
+import ru.didorenko.votingsystem.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -57,7 +61,21 @@ public class SecurityConfig {
                                 .requestMatchers("/api/**").authenticated())
                 .httpBasic(withDefaults())
                 .sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf(AbstractHttpConfigurer::disable);
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(withDefaults());
         return http.build();
     }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 }
