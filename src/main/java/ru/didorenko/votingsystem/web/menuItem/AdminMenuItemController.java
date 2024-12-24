@@ -21,7 +21,7 @@ public class AdminMenuItemController extends AbstractMenuItemController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id, @RequestParam int restaurantId) {
+    public void delete(@PathVariable int id, @PathVariable int restaurantId) {
         log.info("delete menu item {} for restaurant {}", id, restaurantId);
         menuItemService.deleteExistedByRestaurant(id, restaurantId);
     }
@@ -37,9 +37,10 @@ public class AdminMenuItemController extends AbstractMenuItemController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId, @PathVariable int id) {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> update(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId, @PathVariable int id) {
         log.info("update menu item {} with id={} for restaurant {}", menuItem, id, restaurantId);
-        menuItemService.update(menuItem, restaurantId, id);
+        MenuItem update = menuItemService.update(menuItem, restaurantId, id);
+        return ResponseEntity.ok(update);
     }
 }

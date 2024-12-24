@@ -1,6 +1,7 @@
 package ru.didorenko.votingsystem.repository;
 
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.didorenko.votingsystem.common.BaseRepository;
@@ -27,4 +28,8 @@ public interface VoteRepository extends BaseRepository<Vote> {
         vote.setRestaurant(restaurant);
         save(vote);
     }
+
+    @Query("SELECT COUNT(v) FROM Vote v WHERE v.restaurant.id = :restaurantId AND v.date = :today")
+    int countVotesForRestaurantToday(@Param("restaurantId") int restaurantId, @Param("today") LocalDate today);
+
 }

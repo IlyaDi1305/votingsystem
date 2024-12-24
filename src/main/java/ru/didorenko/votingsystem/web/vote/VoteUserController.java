@@ -1,4 +1,4 @@
-package ru.didorenko.votingsystem.web;
+package ru.didorenko.votingsystem.web.vote;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +8,8 @@ import ru.didorenko.votingsystem.app.AuthUser;
 import ru.didorenko.votingsystem.model.Vote;
 import ru.didorenko.votingsystem.service.VoteService;
 import ru.didorenko.votingsystem.to.VoteTo;
+import ru.didorenko.votingsystem.utill.VoteUtil;
+
 import java.util.List;
 
 @RestController
@@ -27,8 +29,14 @@ public class VoteUserController {
     }
 
     @PostMapping
-    public ResponseEntity<Vote> createOrUpdate(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+    public ResponseEntity<?> createOrUpdate(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
         Vote vote = voteService.createOrUpdateVote(restaurantId, user.id());
-        return ResponseEntity.ok(vote);
+        return ResponseEntity.ok(VoteUtil.createTo(vote));
+    }
+
+    @GetMapping("/count-today")
+    public ResponseEntity<Integer> getVoteCountForRestaurantToday(@RequestParam Integer restaurantId) {
+        int voteCount = voteService.getVoteCountForRestaurantToday(restaurantId);
+        return ResponseEntity.ok(voteCount);
     }
 }

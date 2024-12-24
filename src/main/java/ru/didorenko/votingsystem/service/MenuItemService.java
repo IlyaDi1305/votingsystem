@@ -45,9 +45,9 @@ public class MenuItemService {
     }
 
     @CacheEvict(value = {"menuItems", "menuItemsByDate"}, allEntries = true)
-    public void update(MenuItem menuItem, int restaurantId, int id) {
+    public MenuItem update(MenuItem menuItem, int restaurantId, int id) {
         ValidationUtil.assureIdConsistent(menuItem, id);
         menuItem.setRestaurant(entityManager.getReference(Restaurant.class, restaurantId));
-        repository.save(menuItem);
+        return repository.save(menuItem);
     }
 }

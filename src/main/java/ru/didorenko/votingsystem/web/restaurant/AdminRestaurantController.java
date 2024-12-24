@@ -6,10 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.model.Restaurant;
-
-import java.net.URI;
+import ru.didorenko.votingsystem.utill.RestaurantUtill;
 
 @Slf4j
 @RestController
@@ -20,20 +18,18 @@ public class AdminRestaurantController extends AbstractRestaurantController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@RequestParam @Valid String name) {
+    public ResponseEntity<?> create(@RequestBody @Valid String name) {
         log.info("create restaurant with name: {}", name);
-        Restaurant created = restaurantService.create(name);
-        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL).build().toUri();
-        return ResponseEntity.created(uriOfNewResource).body(created);
+        Restaurant restaurant = restaurantService.create(name);
+        return ResponseEntity.ok(RestaurantUtill.createTo(restaurant));
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestParam @Valid String newName) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody @Valid String newName) {
         log.info("update restaurant with id: {} to new name: {}", id, newName);
         Restaurant updated = restaurantService.update(id, newName);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(RestaurantUtill.createTo(updated));
     }
 
     @DeleteMapping("/{id}")

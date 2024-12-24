@@ -28,7 +28,9 @@ spring:
     #    tcp: jdbc:h2:tcp://localhost:9092/~/votingsystem
     username: sa
     password:
-
+  h2:
+    console:
+      enabled: true
 # Jackson Serialization Issue Resolver
   jackson.visibility:
     field: any
@@ -38,7 +40,7 @@ spring:
 
   # https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html#common-application-properties-cache
   cache:
-    cache-names: users, menuItems, menuItemsByDate, restaurants, restaurantsByName, votesByUser
+    cache-names: users, menuItems, menuItemsByDate, restaurants, restaurantsByName, restaurantsAll, votesByUser
     caffeine.spec: maximumSize=5000,expireAfterAccess=60s
 
 logging:

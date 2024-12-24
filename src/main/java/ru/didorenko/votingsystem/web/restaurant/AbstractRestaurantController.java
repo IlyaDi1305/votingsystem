@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.service.RestaurantService;
+import ru.didorenko.votingsystem.to.RestaurantTo;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public abstract class AbstractRestaurantController {
     }
 
     @GetMapping
-    public List<Restaurant> getAll() {
+    public List<RestaurantTo> getAll() {
         log.info("get all restaurants");
         return restaurantService.getAll();
     }

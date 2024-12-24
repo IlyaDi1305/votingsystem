@@ -6,10 +6,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.repository.RestaurantRepository;
+import ru.didorenko.votingsystem.to.RestaurantTo;
 import ru.didorenko.votingsystem.utill.RestaurantUtill;
 
 import java.util.List;
 import java.util.Optional;
+
+import static ru.didorenko.votingsystem.utill.RestaurantUtill.createToList;
 
 @Service
 public class RestaurantService {
@@ -23,8 +26,8 @@ public class RestaurantService {
     }
 
     @Cacheable(value = "restaurantsAll")
-    public List<Restaurant> getAll() {
-        return repository.findAll();
+    public List<RestaurantTo> getAll() {
+        return createToList(repository.findAll());
     }
 
     @Cacheable(value = "restaurantsByName", key = "#name")
@@ -32,7 +35,7 @@ public class RestaurantService {
         return repository.getExistedByName(name);
     }
 
-    @CacheEvict(value = "restaurantsAll", allEntries = true)
+    @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
     public Restaurant create(String name) {
         if (repository.getExistedByNameNot(name).isPresent()) {
             throw new IllegalArgumentException("Restaurant with name '" + name + "' already exists");
@@ -40,7 +43,7 @@ public class RestaurantService {
         return repository.save(RestaurantUtill.createNewWithName(name));
     }
 
-    @CacheEvict(value = {"restaurants", "restaurantsByName"}, key = "#id")
+    @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
     public Restaurant update(int id, String newName) {
         Optional<Restaurant> existingRestaurant = repository.findById(id);
         if (existingRestaurant.isEmpty()) {
@@ -53,7 +56,7 @@ public class RestaurantService {
         return repository.save(RestaurantUtill.updateWithName(existingRestaurant.get(), newName));
     }
 
-    @CacheEvict(value = "restaurants", key = "#id")
+    @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
     public void delete(int id) {
         repository.deleteExisted(id);
     }

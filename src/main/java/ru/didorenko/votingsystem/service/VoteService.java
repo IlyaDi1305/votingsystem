@@ -43,4 +43,9 @@ public class VoteService {
         }
         return voteRepository.save(new Vote(userRepository.getExisted(userId), restaurantRepository.getExisted(restaurantId)));
     }
+
+    public int getVoteCountForRestaurantToday(Integer restaurantId) {
+        return voteRepository.countVotesForRestaurantToday(restaurantId, LocalDate.now());
+    }
+
 }
