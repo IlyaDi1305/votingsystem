@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Table(name = "menu_item")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class MenuItem extends NamedEntity {
 
     @Column(name = "description")

@@ -32,7 +32,7 @@ public class VoteService {
         return createToList(voteRepository.getAllByUserId(userId));
     }
 
-    @CacheEvict(value = "votesByUser", key = "#userId")
+    @CacheEvict(value = "votesByUser", key = "#userId", allEntries = true)
     public Vote createOrUpdateVote(int restaurantId, int userId) {
         LocalDate today = LocalDate.now();
         Vote existingVote = voteRepository.findByUserIdAndDate(userId, today).orElse(null);
@@ -47,5 +47,4 @@ public class VoteService {
     public int getVoteCountForRestaurantToday(Integer restaurantId) {
         return voteRepository.countVotesForRestaurantToday(restaurantId, LocalDate.now());
     }
-
 }

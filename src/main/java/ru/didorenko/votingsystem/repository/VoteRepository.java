@@ -23,10 +23,10 @@ public interface VoteRepository extends BaseRepository<Vote> {
     Optional<Vote> findByUserIdAndDate(Integer userId, LocalDate date);
 
     @Transactional
-    default void updateAndSave(Vote vote, Restaurant restaurant) {
+    default Vote updateAndSave(Vote vote, Restaurant restaurant) {
         vote.setTime(LocalTime.now().truncatedTo(ChronoUnit.MINUTES));
         vote.setRestaurant(restaurant);
-        save(vote);
+        return save(vote);
     }
 
     @Query("SELECT COUNT(v) FROM Vote v WHERE v.restaurant.id = :restaurantId AND v.date = :today")
