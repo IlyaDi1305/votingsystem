@@ -21,7 +21,7 @@ public class UserTestData {
     public static final String GUEST_MAIL = "guest@gmail.com";
 
     public static final User user = new User(USER_ID, "User", USER_MAIL, "password", Role.USER);
-    public static final User admin = new User(ADMIN_ID, "Admin", ADMIN_MAIL, "admin", Role.ADMIN, Role.USER);
+    public static final User admin = new User(ADMIN_ID, "Admin", ADMIN_MAIL, "admin", Role.ADMIN);
     public static final User guest = new User(GUEST_ID, "Guest", GUEST_MAIL, "guest");
 
     public static User getNew() {

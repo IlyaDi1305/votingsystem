@@ -28,9 +28,6 @@ spring:
     #    tcp: jdbc:h2:tcp://localhost:9092/~/votingsystem
     username: sa
     password:
-  h2:
-    console:
-      enabled: true
 # Jackson Serialization Issue Resolver
   jackson.visibility:
     field: any
@@ -46,7 +43,7 @@ spring:
 logging:
   level:
     root: WARN
-    ru.javaops.bootjava: DEBUG
+    ru.didorenko.votingsystem: DEBUG
     org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
 
 server.servlet:

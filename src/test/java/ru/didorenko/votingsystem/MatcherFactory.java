@@ -56,7 +56,7 @@ public class MatcherFactory {
         }
 
         public void assertMatch(Iterable<T> actual, Iterable<T> expected) {
-            iterableAssertion.accept(actual, expected);
+            assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
         }
 
         public ResultMatcher contentJson(T expected) {

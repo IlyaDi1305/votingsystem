@@ -3,7 +3,6 @@ package ru.didorenko.votingsystem.web.restaurant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.service.RestaurantService;
 import ru.didorenko.votingsystem.to.RestaurantTo;
 
@@ -16,7 +15,7 @@ public abstract class AbstractRestaurantController {
     protected RestaurantService restaurantService;
 
     @GetMapping("/{id}")
-    public Restaurant get(@PathVariable int id) {
+    public RestaurantTo get(@PathVariable int id) {
         log.info("get restaurant with id {}", id);
         return restaurantService.getExisted(id);
     }
@@ -28,7 +27,7 @@ public abstract class AbstractRestaurantController {
     }
 
     @GetMapping("/by-name")
-    public Restaurant getByName(@RequestParam String name) {
+    public RestaurantTo getByName(@RequestParam String name) {
         log.info("get restaurant by name {}", name);
         return restaurantService.getExistedByName(name);
     }

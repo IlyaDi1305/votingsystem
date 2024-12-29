@@ -6,7 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.didorenko.votingsystem.AbstractControllerTest;
+import ru.didorenko.votingsystem.AbstractTest;
 import ru.didorenko.votingsystem.utill.UsersUtil;
 import ru.didorenko.votingsystem.model.User;
 import ru.didorenko.votingsystem.repository.UserRepository;
@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ProfileControllerTest extends AbstractControllerTest {
+class ProfileTest extends AbstractTest {
 
     @Autowired
     private UserRepository repository;

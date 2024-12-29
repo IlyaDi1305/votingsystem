@@ -1,10 +1,9 @@
 package ru.didorenko.votingsystem.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import ru.didorenko.votingsystem.AbstractTest;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.repository.RestaurantRepository;
 import ru.didorenko.votingsystem.to.RestaurantTo;
@@ -15,7 +14,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class RestaurantServiceTest {
+class RestaurantServiceTest extends AbstractTest {
 
     @Mock
     private RestaurantRepository repository;
@@ -23,22 +22,21 @@ class RestaurantServiceTest {
     @InjectMocks
     private RestaurantService service;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
-
     @Test
     void getExisted() {
         int id = 1;
         Restaurant restaurant = new Restaurant(id, "Test Restaurant");
+        RestaurantTo expectedRestaurantTo = new RestaurantTo(id, "Test Restaurant");
+
         when(repository.getExisted(id)).thenReturn(restaurant);
 
-        Restaurant result = service.getExisted(id);
+        RestaurantTo result = service.getExisted(id);
 
-        assertNotNull(result);
-        assertEquals(restaurant, result);
-        verify(repository, times(1)).getExisted(id);
+        assertNotNull(result, "Result should not be null");
+        assertEquals(expectedRestaurantTo.getId(), result.getId(), "Restaurant ID should match");
+        assertEquals(expectedRestaurantTo.getName(), result.getName(), "Restaurant name should match");
+
+        verify(repository).getExisted(id);
     }
 
     @Test
@@ -51,9 +49,9 @@ class RestaurantServiceTest {
 
         List<RestaurantTo> result = service.getAll();
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(repository, times(1)).findAll();
+        assertNotNull(result, "Result should not be null");
+        assertEquals(2, result.size(), "List size should be 2");
+        verify(repository).findAll();
     }
 
     @Test
@@ -65,10 +63,11 @@ class RestaurantServiceTest {
 
         Restaurant result = service.create(name);
 
-        assertNotNull(result);
-        assertEquals(name, result.getName());
-        verify(repository, times(1)).getExistedByNameNot(name);
-        verify(repository, times(1)).save(any(Restaurant.class));
+        assertNotNull(result, "Result should not be null");
+        assertEquals(name, result.getName(), "Restaurant name should match");
+
+        verify(repository).getExistedByNameNot(name);
+        verify(repository).save(any(Restaurant.class));
     }
 
     @Test
@@ -79,7 +78,7 @@ class RestaurantServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.create(name));
 
         assertEquals("Restaurant with name 'Existing Restaurant' already exists", exception.getMessage());
-        verify(repository, times(1)).getExistedByNameNot(name);
+        verify(repository).getExistedByNameNot(name);
         verify(repository, never()).save(any(Restaurant.class));
     }
 
@@ -94,11 +93,12 @@ class RestaurantServiceTest {
 
         Restaurant result = service.update(id, newName);
 
-        assertNotNull(result);
-        assertEquals(newName, result.getName());
-        verify(repository, times(1)).findById(id);
-        verify(repository, times(1)).getExistedByNameNot(newName);
-        verify(repository, times(1)).save(any(Restaurant.class));
+        assertNotNull(result, "Result should not be null");
+        assertEquals(newName, result.getName(), "Updated name should match");
+
+        verify(repository).findById(id);
+        verify(repository).getExistedByNameNot(newName);
+        verify(repository).save(any(Restaurant.class));
     }
 
     @Test
@@ -110,7 +110,7 @@ class RestaurantServiceTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> service.update(id, newName));
 
         assertEquals("Restaurant with id '1' not found", exception.getMessage());
-        verify(repository, times(1)).findById(id);
+        verify(repository).findById(id);
         verify(repository, never()).save(any(Restaurant.class));
     }
 
@@ -121,6 +121,6 @@ class RestaurantServiceTest {
 
         service.delete(id);
 
-        verify(repository, times(1)).deleteExisted(id);
+        verify(repository).deleteExisted(id);
     }
 }

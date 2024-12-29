@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.didorenko.votingsystem.AbstractControllerTest;
+import ru.didorenko.votingsystem.AbstractTest;
 import ru.didorenko.votingsystem.model.Role;
 import ru.didorenko.votingsystem.model.User;
 import ru.didorenko.votingsystem.repository.UserRepository;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class AdminUserControllerTest extends AbstractControllerTest {
+class AdminUserTest extends AbstractTest {
 
     private static final String REST_URL_SLASH = AdminUserController.REST_URL + '/';
 

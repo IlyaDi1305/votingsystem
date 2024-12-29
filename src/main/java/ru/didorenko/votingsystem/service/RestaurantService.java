@@ -12,6 +12,7 @@ import ru.didorenko.votingsystem.utill.RestaurantUtill;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.didorenko.votingsystem.utill.RestaurantUtill.createTo;
 import static ru.didorenko.votingsystem.utill.RestaurantUtill.createToList;
 
 @Service
@@ -21,8 +22,8 @@ public class RestaurantService {
     private RestaurantRepository repository;
 
     @Cacheable(value = "restaurants", key = "#id")
-    public Restaurant getExisted(int id) {
-        return repository.getExisted(id);
+    public RestaurantTo getExisted(int id) {
+        return createTo(repository.getExisted(id));
     }
 
     @Cacheable(value = "restaurantsAll")
@@ -31,8 +32,8 @@ public class RestaurantService {
     }
 
     @Cacheable(value = "restaurantsByName", key = "#name")
-    public Restaurant getExistedByName(String name) {
-        return repository.getExistedByName(name);
+    public RestaurantTo getExistedByName(String name) {
+        return createTo(repository.getExistedByName(name));
     }
 
     @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)

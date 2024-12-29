@@ -6,13 +6,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import ru.didorenko.votingsystem.common.model.NamedEntity;
+import ru.didorenko.votingsystem.common.validation.NoHtml;
+
 import java.time.LocalDate;
 
 @Entity
@@ -25,6 +26,7 @@ public class MenuItem extends NamedEntity {
     @Column(name = "description")
     @Size(min = 2, max = 128)
     @NotBlank
+    @NoHtml
     private String description;
 
     @Column(name = "price")

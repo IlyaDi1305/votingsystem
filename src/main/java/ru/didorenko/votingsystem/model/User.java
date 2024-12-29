@@ -23,7 +23,6 @@ import java.util.*;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends NamedEntity implements HasIdAndEmail {
-// No session, no needs Serializable
 
     @Column(name = "email", nullable = false, unique = true)
     @Email

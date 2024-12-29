@@ -27,6 +27,7 @@ public class AdminMenuItemController extends AbstractMenuItemController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<MenuItem> createWithLocation(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId) {
         log.info("create {}", menuItem);
         MenuItem created = menuItemService.create(menuItem, restaurantId);

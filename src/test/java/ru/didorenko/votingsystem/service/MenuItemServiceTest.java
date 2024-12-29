@@ -1,20 +1,20 @@
 package ru.didorenko.votingsystem.service;
 
 import jakarta.persistence.EntityManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import ru.didorenko.votingsystem.AbstractTest;
 import ru.didorenko.votingsystem.model.MenuItem;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.repository.MenuItemRepository;
+
 import java.time.LocalDate;
 import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class MenuItemServiceTest {
+class MenuItemServiceTest extends AbstractTest {
 
     @Mock
     private MenuItemRepository menuItemRepository;
@@ -22,19 +22,8 @@ class MenuItemServiceTest {
     @Mock
     private EntityManager entityManager;
 
-    @Mock
-    private CacheManager cacheManager;
-
-    @Mock
-    private Cache cache;
-
     @InjectMocks
     private MenuItemService menuItemService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testGetExistedByRestaurant() {
@@ -42,16 +31,16 @@ class MenuItemServiceTest {
         int restaurantId = 1;
         MenuItem menuItem = new MenuItem();
         menuItem.setId(id);
-        menuItem.setRestaurant(new Restaurant(restaurantId, "rest"));
+        menuItem.setRestaurant(new Restaurant(restaurantId, "Test Restaurant"));
 
         when(menuItemRepository.getExistedByRestaurant(id, restaurantId)).thenReturn(menuItem);
 
         MenuItem result = menuItemService.getExistedByRestaurant(id, restaurantId);
 
-        assertNotNull(result);
-        assertEquals(id, result.getId());
-        assertEquals(restaurantId, result.getRestaurant().getId());
-        verify(menuItemRepository, times(1)).getExistedByRestaurant(id, restaurantId);
+        assertNotNull(result, "MenuItem should not be null");
+        assertEquals(id, result.getId(), "MenuItem ID should match");
+        assertEquals(restaurantId, result.getRestaurant().getId(), "Restaurant ID should match");
+        verify(menuItemRepository).getExistedByRestaurant(id, restaurantId);
     }
 
     @Test
@@ -66,9 +55,9 @@ class MenuItemServiceTest {
 
         List<MenuItem> result = menuItemService.findAllByRestaurantIdAndDishDate(restaurantId, date);
 
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        verify(menuItemRepository, times(1)).findAllByRestaurantIdAndDishDate(restaurantId, date);
+        assertNotNull(result, "Result list should not be null");
+        assertFalse(result.isEmpty(), "Result list should not be empty");
+        verify(menuItemRepository).findAllByRestaurantIdAndDishDate(restaurantId, date);
     }
 
     @Test
@@ -80,7 +69,7 @@ class MenuItemServiceTest {
 
         menuItemService.deleteExistedByRestaurant(id, restaurantId);
 
-        verify(menuItemRepository, times(1)).deleteExistedByRestaurant(id, restaurantId);
+        verify(menuItemRepository).deleteExistedByRestaurant(id, restaurantId);
     }
 
     @Test
@@ -88,7 +77,7 @@ class MenuItemServiceTest {
         int restaurantId = 1;
         MenuItem menuItem = new MenuItem();
         menuItem.setDate(LocalDate.now());
-        Restaurant restaurant = new Restaurant(restaurantId, "rest");
+        Restaurant restaurant = new Restaurant(restaurantId, "Test Restaurant");
         menuItem.setRestaurant(restaurant);
 
         when(entityManager.getReference(Restaurant.class, restaurantId)).thenReturn(restaurant);
@@ -96,9 +85,9 @@ class MenuItemServiceTest {
 
         MenuItem result = menuItemService.create(menuItem, restaurantId);
 
-        assertNotNull(result);
-        assertEquals(restaurantId, result.getRestaurant().getId());
-        verify(menuItemRepository, times(1)).save(menuItem);
+        assertNotNull(result, "Created MenuItem should not be null");
+        assertEquals(restaurantId, result.getRestaurant().getId(), "Restaurant ID should match");
+        verify(menuItemRepository).save(menuItem);
     }
 
     @Test
@@ -108,7 +97,7 @@ class MenuItemServiceTest {
         MenuItem menuItem = new MenuItem();
         menuItem.setId(id);
         menuItem.setDate(LocalDate.now());
-        Restaurant restaurant = new Restaurant(restaurantId, "rest");
+        Restaurant restaurant = new Restaurant(restaurantId, "Test Restaurant");
         menuItem.setRestaurant(restaurant);
 
         when(entityManager.getReference(Restaurant.class, restaurantId)).thenReturn(restaurant);
@@ -116,9 +105,9 @@ class MenuItemServiceTest {
 
         MenuItem result = menuItemService.update(menuItem, restaurantId, id);
 
-        assertNotNull(result);
-        assertEquals(id, result.getId());
-        assertEquals(restaurantId, result.getRestaurant().getId());
-        verify(menuItemRepository, times(1)).save(menuItem);
+        assertNotNull(result, "Updated MenuItem should not be null");
+        assertEquals(id, result.getId(), "MenuItem ID should match");
+        assertEquals(restaurantId, result.getRestaurant().getId(), "Restaurant ID should match");
+        verify(menuItemRepository).save(menuItem);
     }
 }
