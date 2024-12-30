@@ -4,7 +4,7 @@ import java.time.LocalTime;
 
 public class VoteValidator {
 
-    private static final LocalTime DEADLINE = LocalTime.of(23, 55);
+    private static final LocalTime DEADLINE = LocalTime.of(11, 0);
 
     public static void validateDeadline() {
         if (LocalTime.now().isAfter(DEADLINE)) {
