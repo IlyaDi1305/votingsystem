@@ -13,44 +13,46 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 @Entity
-@Table(name = "vote")
+@Table(name = "vote", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "vote_date"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
 public class Vote extends BaseEntity {
 
-    @Column(name = "date")
+    @Column(name = "vote_date", nullable = false)
     @NotNull
-    private LocalDate date;
+    private LocalDate voteDate;
 
-    @Column(name = "time")
+    @Column(name = "vote_time", nullable = false)
     @NotNull
-    private LocalTime time;
+    private LocalTime voteTime;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     @NotNull
     @OnDelete(action = OnDeleteAction.CASCADE)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "restaurant_id")
+    @JoinColumn(name = "restaurant_id", nullable = false)
     @NotNull
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Restaurant restaurant;
 
-    public Vote(Integer id, LocalDate date, LocalTime time, User user, Restaurant restaurant) {
+    public Vote(Integer id, LocalDate voteDate, LocalTime voteTime, User user, Restaurant restaurant) {
         super(id);
-        this.date = date;
-        this.time = time;
+        this.voteDate = voteDate;
+        this.voteTime = voteTime;
         this.user = user;
         this.restaurant = restaurant;
     }
 
     public Vote(User user, Restaurant restaurant) {
         super(null);
-        this.date = LocalDate.now();
-        this.time = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
+        this.voteDate = LocalDate.now();
+        this.voteTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
         this.user = user;
         this.restaurant = restaurant;
     }
@@ -59,8 +61,8 @@ public class Vote extends BaseEntity {
     public String toString() {
         return "Vote{" +
                 "id=" + id +
-                ", time=" + time +
-                ", date=" + date +
+                ", voteTime=" + voteTime +
+                ", voteDate=" + voteDate +
                 '}';
     }
 }

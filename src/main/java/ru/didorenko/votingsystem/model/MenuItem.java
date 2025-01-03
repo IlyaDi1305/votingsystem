@@ -33,9 +33,9 @@ public class MenuItem extends NamedEntity {
     @NotNull
     private Double price;
 
-    @Column(name = "date")
+    @Column(name = "menu_item_date")
     @NotNull
-    private LocalDate date;
+    private LocalDate menuItemDate;
 
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +49,7 @@ public class MenuItem extends NamedEntity {
         return "MenuItem{" +
                 "description='" + description + '\'' +
                 ", price=" + price +
-                ", date=" + date +
+                ", date=" + menuItemDate +
                 ", name=" + name +
                 ", id=" + id +
                 '}';

@@ -13,13 +13,13 @@ VALUES ('McDonalds'),
        ('Pizzeria Bacco'),
        ('Taj im Taunus');
 
-INSERT INTO MENU_ITEM (name, description, price, date, restaurant_id)
+INSERT INTO MENU_ITEM (name, description, price, menu_item_date, restaurant_id)
 VALUES ('Burger', 'brotchen, fleisch', 7.55, now(), 1),
        ('Cola', 'zuker, wasser', 4.15, now(), 1),
        ('Pizza Salami', 'salami', 8.20, now(),2),
        ('Misosup', 'wasser, soya', 12.90, now(),3);
 
-INSERT INTO VOTE (date, time, user_id, restaurant_id)
+INSERT INTO VOTE (vote_date, vote_time, user_id, restaurant_id)
 VALUES (now(), '7:30', 1, 1),
        (now(), '9:30', 2, 2),
        (now(), '11:30', 3, 3);

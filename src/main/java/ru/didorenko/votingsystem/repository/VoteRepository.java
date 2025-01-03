@@ -19,11 +19,11 @@ public interface VoteRepository extends BaseRepository<Vote> {
     @Query("SELECT v FROM Vote v WHERE v.user.id =:userId")
     List<Vote> getAllByUserId(int userId);
 
-    Optional<Vote> findByUserIdAndDate(Integer userId, LocalDate date);
+    Optional<Vote> findByUserIdAndVoteDate(Integer userId, LocalDate date);
 
     @Transactional
     default Vote update(Vote vote, Restaurant restaurant) {
-        vote.setTime(LocalTime.now().truncatedTo(ChronoUnit.MINUTES));
+        vote.setVoteTime(LocalTime.now().truncatedTo(ChronoUnit.MINUTES));
         vote.setRestaurant(restaurant);
         return save(vote);
     }

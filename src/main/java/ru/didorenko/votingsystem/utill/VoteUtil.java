@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class VoteUtil {
 
     public static VoteTo createTo(Vote vote) {
-        return new VoteTo(vote.id(), vote.getDate(), vote.getRestaurant().getId());
+        return new VoteTo(vote.id(), vote.getVoteDate(), vote.getRestaurant().getId());
     }
 
     public static List<VoteTo> createToList(List<Vote> votes) {
