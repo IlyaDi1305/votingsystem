@@ -31,3 +31,8 @@ The project is designed for backend use only and assumes a frontend will be buil
 - **Spring Security**
 - **Swagger/OpenAPI** for API documentation
 - **Lombok** to reduce boilerplate code
+
+---
+
+## Swagger REST API documentation
+- **[Swagger](http://localhost:8080/swagger-ui/index.html): http://localhost:8080/swagger-ui/index.html**

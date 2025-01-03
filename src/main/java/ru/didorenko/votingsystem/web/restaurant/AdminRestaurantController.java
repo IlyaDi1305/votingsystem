@@ -26,12 +26,11 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     }
 
     @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody @Valid RestaurantTo restaurantTo) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@PathVariable Integer id, @RequestBody @Valid RestaurantTo restaurantTo) {
         log.info("update restaurant with id: {} to new name: {}", id, restaurantTo.getName());
         Restaurant updated = restaurantService.update(id, restaurantTo.getName());
-        RestaurantTo result = RestaurantUtill.createTo(updated);
-        return ResponseEntity.ok(result);
+        RestaurantUtill.createTo(updated);
     }
 
     @DeleteMapping("/{id}")

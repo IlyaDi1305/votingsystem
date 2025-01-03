@@ -1,5 +1,6 @@
 package ru.didorenko.votingsystem.validation;
 
+import ru.didorenko.votingsystem.common.error.VoteDeadlineException;
 import java.time.LocalTime;
 
 public class VoteValidator {
@@ -8,7 +9,7 @@ public class VoteValidator {
 
     public static void validateDeadline() {
         if (LocalTime.now().isAfter(DEADLINE)) {
-            throw new IllegalStateException("Vote cannot be changed after 11:00 AM.");
+            throw new VoteDeadlineException("Vote cannot be changed after 11:00 AM.");
         }
     }
 }

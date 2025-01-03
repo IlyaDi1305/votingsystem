@@ -1,5 +1,6 @@
 package ru.didorenko.votingsystem.web.vote;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,14 +30,15 @@ public class VoteUserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrUpdate(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
-        Vote vote = voteService.createOrUpdateVote(restaurantId, user.id());
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<VoteTo> createVote(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+        Vote vote = voteService.createVote(restaurantId, user.id());
         return ResponseEntity.ok(VoteUtil.createTo(vote));
     }
 
-    @GetMapping("/count-today")
-    public ResponseEntity<Integer> getVoteCountForRestaurantToday(@RequestParam Integer restaurantId) {
-        int voteCount = voteService.getVoteCountForRestaurantToday(restaurantId);
-        return ResponseEntity.ok(voteCount);
+    @PutMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateVote(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+        voteService.updateVote(user.id(), restaurantId);
     }
 }

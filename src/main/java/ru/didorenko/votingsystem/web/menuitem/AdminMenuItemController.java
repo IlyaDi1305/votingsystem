@@ -1,4 +1,4 @@
-package ru.didorenko.votingsystem.web.menuItem;
+package ru.didorenko.votingsystem.web.menuitem;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +38,9 @@ public class AdminMenuItemController extends AbstractMenuItemController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> update(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId, @PathVariable int id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId, @PathVariable int id) {
         log.info("update menu item {} with id={} for restaurant {}", menuItem, id, restaurantId);
-        MenuItem update = menuItemService.update(menuItem, restaurantId, id);
-        return ResponseEntity.ok(update);
+        menuItemService.update(menuItem, restaurantId, id);
     }
 }

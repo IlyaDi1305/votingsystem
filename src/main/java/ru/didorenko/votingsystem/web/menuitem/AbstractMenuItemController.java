@@ -1,4 +1,4 @@
-package ru.didorenko.votingsystem.web.menuItem;
+package ru.didorenko.votingsystem.web.menuitem;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
