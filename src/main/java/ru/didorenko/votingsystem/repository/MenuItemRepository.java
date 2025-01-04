@@ -36,8 +36,8 @@ public interface MenuItemRepository extends BaseRepository<MenuItem> {
         }
     }
 
-    @Query("SELECT m FROM MenuItem m WHERE m.restaurant.id = :restaurantId AND m.date = :date")
+    @Query("SELECT m FROM MenuItem m WHERE m.restaurant.id = :restaurantId AND m.menuItemDate = :menuItemDate")
     List<MenuItem> findAllByRestaurantIdAndDishDate(@Param("restaurantId") int restaurantId,
-                                                    @Param("date") LocalDate date);
+                                                    @Param("menuItemDate") LocalDate menuItemDate);
 
 }

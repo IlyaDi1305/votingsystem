@@ -37,7 +37,7 @@ public class VoteService {
     public Vote createVote(int restaurantId, int userId) {
         LocalDate today = LocalDate.now();
         validateDeadline();
-        if (voteRepository.findByUserIdAndDate(userId, today).isPresent()) {
+        if (voteRepository.findByUserIdAndVoteDate(userId, today).isPresent()) {
             throw new IllegalStateException("Vote already exists for today. Use PUT to update.");
         }
         return voteRepository.save(new Vote(userRepository.getExisted(userId), restaurantRepository.getExisted(restaurantId)));
@@ -47,7 +47,7 @@ public class VoteService {
     public void updateVote(int restaurantId, int userId) {
         LocalDate today = LocalDate.now();
         validateDeadline();
-        Vote existingVote = voteRepository.findByUserIdAndDate(userId, today).orElseThrow(() -> new NotFoundException("Vote not found"));
+        Vote existingVote = voteRepository.findByUserIdAndVoteDate(userId, today).orElseThrow(() -> new NotFoundException("Vote not found"));
         voteRepository.update(existingVote, restaurantRepository.getExisted(restaurantId));
     }
 }

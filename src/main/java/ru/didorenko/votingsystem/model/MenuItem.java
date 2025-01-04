@@ -31,7 +31,7 @@ public class MenuItem extends NamedEntity {
 
     @Column(name = "price")
     @NotNull
-    private Double price;
+    private Integer price; // Price in cents for better precision
 
     @Column(name = "menu_item_date")
     @NotNull

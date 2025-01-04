@@ -6,9 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.to.RestaurantTo;
 import ru.didorenko.votingsystem.utill.RestaurantUtill;
+
+import java.net.URI;
 
 @Slf4j
 @RestController
@@ -19,10 +22,13 @@ public class AdminRestaurantController extends AbstractRestaurantController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> create(@RequestBody @Valid RestaurantTo restaurantTo) {
+    public ResponseEntity<RestaurantTo> createWithLocation(@RequestBody @Valid RestaurantTo restaurantTo) {
         log.info("create restaurant with name: {}", restaurantTo.getName());
         RestaurantTo result = RestaurantUtill.createTo(restaurantService.create(restaurantTo.getName()));
-        return ResponseEntity.ok(result);
+        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(REST_URL)
+                .buildAndExpand(result.getId()).toUri();
+        return ResponseEntity.created(uriOfNewResource).body(result);
     }
 
     @PutMapping("/{id}")

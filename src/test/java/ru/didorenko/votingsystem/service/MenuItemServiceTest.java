@@ -48,7 +48,7 @@ class MenuItemServiceTest extends AbstractTest {
         int restaurantId = 1;
         LocalDate date = LocalDate.now();
         MenuItem menuItem = new MenuItem();
-        menuItem.setDate(date);
+        menuItem.setMenuItemDate(date);
 
         when(menuItemRepository.findAllByRestaurantIdAndDishDate(restaurantId, date))
                 .thenReturn(List.of(menuItem));
@@ -76,7 +76,7 @@ class MenuItemServiceTest extends AbstractTest {
     void testCreate() {
         int restaurantId = 1;
         MenuItem menuItem = new MenuItem();
-        menuItem.setDate(LocalDate.now());
+        menuItem.setMenuItemDate(LocalDate.now());
         Restaurant restaurant = new Restaurant(restaurantId, "Test Restaurant");
         menuItem.setRestaurant(restaurant);
 
@@ -96,7 +96,7 @@ class MenuItemServiceTest extends AbstractTest {
         int id = 1;
         MenuItem menuItem = new MenuItem();
         menuItem.setId(id);
-        menuItem.setDate(LocalDate.now());
+        menuItem.setMenuItemDate(LocalDate.now());
         Restaurant restaurant = new Restaurant(restaurantId, "Test Restaurant");
         menuItem.setRestaurant(restaurant);
 
