@@ -2,8 +2,11 @@ package ru.didorenko.votingsystem.utill;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.model.Vote;
 import ru.didorenko.votingsystem.to.VoteTo;
+
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,5 +22,11 @@ public class VoteUtil {
         return votes.stream()
                 .map(VoteUtil::createTo)
                 .collect(Collectors.toList());
+    }
+
+    public static Vote setVote(Vote vote, Restaurant restaurant) {
+        vote.setVoteTime(LocalTime.now());
+        vote.setRestaurant(restaurant);
+        return vote;
     }
 }

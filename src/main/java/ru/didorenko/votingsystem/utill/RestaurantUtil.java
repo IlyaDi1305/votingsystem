@@ -6,7 +6,7 @@ import ru.didorenko.votingsystem.to.RestaurantTo;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RestaurantUtill {
+public class RestaurantUtil {
 
     public static Restaurant createNewWithName(String name) {
         return new Restaurant(null, name);
@@ -23,7 +23,7 @@ public class RestaurantUtill {
 
     public static List<RestaurantTo> createToList(List<Restaurant> restaurants) {
         return restaurants.stream()
-                .map(RestaurantUtill::createTo)
+                .map(RestaurantUtil::createTo)
                 .collect(Collectors.toList());
     }
 }

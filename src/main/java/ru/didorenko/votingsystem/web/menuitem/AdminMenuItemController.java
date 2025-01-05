@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.didorenko.votingsystem.common.validation.ValidationUtil;
 import ru.didorenko.votingsystem.model.MenuItem;
 import ru.didorenko.votingsystem.web.restaurant.AdminRestaurantController;
 
@@ -29,6 +30,7 @@ public class AdminMenuItemController extends AbstractMenuItemController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MenuItem> createWithLocation(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId) {
         log.info("create {}", menuItem);
+        ValidationUtil.checkNew(menuItem);
         MenuItem created = menuItemService.create(menuItem, restaurantId);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
@@ -39,6 +41,7 @@ public class AdminMenuItemController extends AbstractMenuItemController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId, @PathVariable int id) {
+        ValidationUtil.assureIdConsistent(menuItem, id);
         log.info("update menu item {} with id={} for restaurant {}", menuItem, id, restaurantId);
         menuItemService.update(menuItem, restaurantId, id);
     }

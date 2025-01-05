@@ -31,14 +31,16 @@ public class VoteUserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<VoteTo> createVote(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+    public ResponseEntity<VoteTo> createVote(@RequestParam Integer restaurantId,
+                                             @AuthenticationPrincipal AuthUser user) {
         Vote vote = voteService.createVote(restaurantId, user.id());
         return ResponseEntity.ok(VoteUtil.createTo(vote));
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateVote(@RequestParam Integer restaurantId, @AuthenticationPrincipal AuthUser user) {
+    public void updateVote(@RequestParam Integer restaurantId,
+                           @AuthenticationPrincipal AuthUser user) {
         voteService.updateVote(user.id(), restaurantId);
     }
 }

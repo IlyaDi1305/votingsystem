@@ -7,23 +7,28 @@ import org.springframework.stereotype.Service;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.repository.RestaurantRepository;
 import ru.didorenko.votingsystem.to.RestaurantTo;
-import ru.didorenko.votingsystem.utill.RestaurantUtill;
-
+import ru.didorenko.votingsystem.utill.RestaurantUtil;
+import ru.didorenko.votingsystem.validation.UniqueRestaurantNameValidator;
 import java.util.List;
-import java.util.Optional;
 
-import static ru.didorenko.votingsystem.utill.RestaurantUtill.createTo;
-import static ru.didorenko.votingsystem.utill.RestaurantUtill.createToList;
+import static ru.didorenko.votingsystem.utill.RestaurantUtil.createTo;
+import static ru.didorenko.votingsystem.utill.RestaurantUtil.createToList;
 
 @Service
 public class RestaurantService {
 
     @Autowired
     private RestaurantRepository repository;
+    @Autowired
+    private UniqueRestaurantNameValidator nameValidator;
 
     @Cacheable(value = "restaurants", key = "#id")
     public RestaurantTo getExisted(int id) {
         return createTo(repository.getExisted(id));
+    }
+
+    public RestaurantTo getExistedByName(String name) {
+        return createTo(repository.findByNameIgnoreCase(name));
     }
 
     @Cacheable(value = "restaurantsAll")
@@ -31,30 +36,18 @@ public class RestaurantService {
         return createToList(repository.findAll());
     }
 
-    @Cacheable(value = "restaurantsByName", key = "#name")
-    public RestaurantTo getExistedByName(String name) {
-        return createTo(repository.getExistedByName(name));
-    }
-
     @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
-    public Restaurant create(String name) {
-        if (repository.getExistedByNameNot(name).isPresent()) {
-            throw new IllegalArgumentException("Restaurant with name '" + name + "' already exists");
-        }
-        return repository.save(RestaurantUtill.createNewWithName(name));
+    public RestaurantTo create(String name) {
+        nameValidator.validate(name,null);
+        return createTo(repository.save(RestaurantUtil.createNewWithName(name)));
     }
 
     @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
     public Restaurant update(int id, String newName) {
-        Optional<Restaurant> existingRestaurant = repository.findById(id);
-        if (existingRestaurant.isEmpty()) {
-            throw new IllegalArgumentException("Restaurant with id '" + id + "' not found");
-        }
-        if (repository.getExistedByNameNot(newName).isPresent() &&
-                !existingRestaurant.get().getName().equalsIgnoreCase(newName)) {
-            throw new IllegalArgumentException("Another restaurant with name '" + newName + "' already exists");
-        }
-        return repository.save(RestaurantUtill.updateWithName(existingRestaurant.get(), newName));
+        nameValidator.validate(newName, id);
+        Restaurant existingRestaurant = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Restaurant with id '" + id + "' not found"));
+        return repository.save(RestaurantUtil.updateWithName(existingRestaurant, newName));
     }
 
     @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)

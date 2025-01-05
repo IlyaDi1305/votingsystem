@@ -7,9 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.to.RestaurantTo;
-import ru.didorenko.votingsystem.utill.RestaurantUtill;
+import ru.didorenko.votingsystem.utill.RestaurantUtil;
 
 import java.net.URI;
 
@@ -24,7 +23,7 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<RestaurantTo> createWithLocation(@RequestBody @Valid RestaurantTo restaurantTo) {
         log.info("create restaurant with name: {}", restaurantTo.getName());
-        RestaurantTo result = RestaurantUtill.createTo(restaurantService.create(restaurantTo.getName()));
+        RestaurantTo result = restaurantService.create(restaurantTo.getName());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL)
                 .buildAndExpand(result.getId()).toUri();
@@ -35,8 +34,7 @@ public class AdminRestaurantController extends AbstractRestaurantController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable Integer id, @RequestBody @Valid RestaurantTo restaurantTo) {
         log.info("update restaurant with id: {} to new name: {}", id, restaurantTo.getName());
-        Restaurant updated = restaurantService.update(id, restaurantTo.getName());
-        RestaurantUtill.createTo(updated);
+        RestaurantUtil.createTo(restaurantService.update(id, restaurantTo.getName()));
     }
 
     @DeleteMapping("/{id}")
