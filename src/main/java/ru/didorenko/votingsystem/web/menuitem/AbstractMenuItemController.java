@@ -1,7 +1,7 @@
 package ru.didorenko.votingsystem.web.menuitem;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.didorenko.votingsystem.model.MenuItem;
@@ -11,10 +11,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 public abstract class AbstractMenuItemController {
 
-    @Autowired
-    protected MenuItemService menuItemService;
+    protected final MenuItemService menuItemService;
 
     @GetMapping("/{id}")
     public MenuItem get(@PathVariable int id, @RequestParam int restaurantId) {

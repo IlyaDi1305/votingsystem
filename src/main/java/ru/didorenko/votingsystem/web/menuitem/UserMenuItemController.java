@@ -3,6 +3,7 @@ package ru.didorenko.votingsystem.web.menuitem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import ru.didorenko.votingsystem.service.MenuItemService;
 import ru.didorenko.votingsystem.web.restaurant.UserRestaurantController;
 
 @Slf4j
@@ -11,4 +12,8 @@ import ru.didorenko.votingsystem.web.restaurant.UserRestaurantController;
 public class UserMenuItemController extends AbstractMenuItemController {
 
     static final String REST_URL = UserRestaurantController.REST_URL + "/{restaurantId}/menuItems";
+
+    public UserMenuItemController(MenuItemService menuItemService) {
+        super(menuItemService);
+    }
 }

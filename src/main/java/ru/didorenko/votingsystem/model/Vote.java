@@ -10,7 +10,6 @@ import org.hibernate.annotations.OnDeleteAction;
 import ru.didorenko.votingsystem.common.model.BaseEntity;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 
 @Entity
 @Table(name = "vote", uniqueConstraints = {
@@ -49,10 +48,10 @@ public class Vote extends BaseEntity {
         this.restaurant = restaurant;
     }
 
-    public Vote(User user, Restaurant restaurant) {
+    public Vote(User user, Restaurant restaurant, LocalDate voteDate, LocalTime voteTime) {
         super(null);
-        this.voteDate = LocalDate.now();
-        this.voteTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
+        this.voteDate = voteDate;
+        this.voteTime = voteTime;
         this.user = user;
         this.restaurant = restaurant;
     }

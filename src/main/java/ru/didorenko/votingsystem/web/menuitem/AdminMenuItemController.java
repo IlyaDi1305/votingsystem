@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.common.validation.ValidationUtil;
 import ru.didorenko.votingsystem.model.MenuItem;
+import ru.didorenko.votingsystem.service.MenuItemService;
 import ru.didorenko.votingsystem.web.restaurant.AdminRestaurantController;
 
 import java.net.URI;
@@ -19,6 +20,10 @@ import java.net.URI;
 public class AdminMenuItemController extends AbstractMenuItemController {
 
     static final String REST_URL = AdminRestaurantController.REST_URL + "/{restaurantId}/menuItems";
+
+    public AdminMenuItemController(MenuItemService menuItemService) {
+        super(menuItemService);
+    }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

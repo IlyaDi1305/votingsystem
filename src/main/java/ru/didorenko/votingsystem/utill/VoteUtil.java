@@ -24,8 +24,8 @@ public class VoteUtil {
                 .collect(Collectors.toList());
     }
 
-    public static Vote setVote(Vote vote, Restaurant restaurant) {
-        vote.setVoteTime(LocalTime.now());
+    public static Vote setVote(Vote vote, Restaurant restaurant, LocalTime time) {
+        vote.setVoteTime(time);
         vote.setRestaurant(restaurant);
         return vote;
     }

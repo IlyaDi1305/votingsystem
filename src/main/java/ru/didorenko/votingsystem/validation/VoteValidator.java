@@ -7,8 +7,8 @@ public class VoteValidator {
 
     private static final LocalTime DEADLINE = LocalTime.of(11, 0);
 
-    public static void validateDeadline() {
-        if (LocalTime.now().isAfter(DEADLINE)) {
+    public static void validateDeadline(LocalTime time) {
+        if (time.isAfter(DEADLINE)) {
             throw new VoteDeadlineException("Vote cannot be changed after 11:00 AM.");
         }
     }

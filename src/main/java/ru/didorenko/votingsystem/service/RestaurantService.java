@@ -1,6 +1,6 @@
 package ru.didorenko.votingsystem.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -15,12 +15,12 @@ import static ru.didorenko.votingsystem.utill.RestaurantUtil.createTo;
 import static ru.didorenko.votingsystem.utill.RestaurantUtil.createToList;
 
 @Service
+@RequiredArgsConstructor
 public class RestaurantService {
 
-    @Autowired
-    private RestaurantRepository repository;
-    @Autowired
-    private UniqueRestaurantNameValidator nameValidator;
+    private final RestaurantRepository repository;
+
+    private final UniqueRestaurantNameValidator nameValidator;
 
     @Cacheable(value = "restaurants", key = "#id")
     public RestaurantTo getExisted(int id) {

@@ -41,6 +41,6 @@ public class VoteUserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateVote(@RequestParam Integer restaurantId,
                            @AuthenticationPrincipal AuthUser user) {
-        voteService.updateVote(user.id(), restaurantId);
+        voteService.updateVote(restaurantId, user.id());
     }
 }

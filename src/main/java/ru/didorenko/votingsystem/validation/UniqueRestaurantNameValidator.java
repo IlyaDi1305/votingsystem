@@ -1,12 +1,12 @@
 package ru.didorenko.votingsystem.validation;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.repository.RestaurantRepository;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UniqueRestaurantNameValidator {
 
     public static final String EXCEPTION_DUPLICATE_NAME = "Restaurant with this name already exists";

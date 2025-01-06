@@ -1,7 +1,7 @@
 package ru.didorenko.votingsystem.service;
 
 import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -14,13 +14,12 @@ import java.util.List;
 import static ru.didorenko.votingsystem.utill.MenuItemUtil.setWithoutRestaurant;
 
 @Service
+@RequiredArgsConstructor
 public class MenuItemService {
 
-    @Autowired
-    private MenuItemRepository repository;
+    private final MenuItemRepository repository;
 
-    @Autowired
-    private EntityManager entityManager;
+    private final EntityManager entityManager;
 
     @Cacheable(value = "menuItems", key = "#id + '_' + #restaurantId")
     public MenuItem getExistedByRestaurant(int id, int restaurantId) {
