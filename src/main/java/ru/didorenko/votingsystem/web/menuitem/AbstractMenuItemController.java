@@ -28,4 +28,11 @@ public abstract class AbstractMenuItemController {
         log.info("get menu for restaurant {} on date {}", restaurantId, date);
         return menuItemService.findAllByRestaurantIdAndDishDate(restaurantId, date);
     }
+
+    @GetMapping("/all-by-date/{date}")
+    public List<MenuItem> getAllMenuByDate(@PathVariable
+                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        log.info("get All menu by date {}", date);
+        return menuItemService.findAllByDate(date);
+    }
 }

@@ -25,7 +25,6 @@ public interface MenuItemRepository extends BaseRepository<MenuItem> {
     }
 
     @Modifying
-    @Transactional
     @Query("DELETE FROM MenuItem mi WHERE mi.id = :id AND mi.restaurant.id = :restaurantId")
     int deleteByIdAndRestaurantId(@Param("id") int id, @Param("restaurantId") int restaurantId);
 
@@ -40,4 +39,6 @@ public interface MenuItemRepository extends BaseRepository<MenuItem> {
     List<MenuItem> findAllByRestaurantIdAndDishDate(@Param("restaurantId") int restaurantId,
                                                     @Param("menuItemDate") LocalDate menuItemDate);
 
+    @Query("SELECT m FROM MenuItem m JOIN FETCH m.restaurant WHERE m.menuItemDate = :menuItemDate")
+    List<MenuItem> findAllByDateWithRestaurant(@Param("menuItemDate") LocalDate menuItemDate);
 }

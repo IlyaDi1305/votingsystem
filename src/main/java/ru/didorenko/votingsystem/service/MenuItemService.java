@@ -21,6 +21,10 @@ public class MenuItemService {
 
     private final EntityManager entityManager;
 
+    public List<MenuItem> findAllByDate(LocalDate date) {
+        return repository.findAllByDateWithRestaurant(date);
+    }
+
     @Cacheable(value = "menuItems", key = "#id + '_' + #restaurantId")
     public MenuItem getExistedByRestaurant(int id, int restaurantId) {
         return repository.getExistedByRestaurant(id, restaurantId);

@@ -1,6 +1,5 @@
 package ru.didorenko.votingsystem.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -37,7 +36,6 @@ public class MenuItem extends NamedEntity {
     @NotNull
     private LocalDate menuItemDate;
 
-    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "restaurant_id")

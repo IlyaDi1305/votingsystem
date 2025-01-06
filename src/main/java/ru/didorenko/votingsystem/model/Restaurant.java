@@ -1,5 +1,6 @@
 package ru.didorenko.votingsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -22,6 +23,7 @@ public class Restaurant extends BaseEntity {
     @Size(min = 2, max = 128)
     private String name;
 
+    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<MenuItem> menuItems;
