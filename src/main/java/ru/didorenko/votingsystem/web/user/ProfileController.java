@@ -2,9 +2,6 @@ package ru.didorenko.votingsystem.web.user;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +26,6 @@ public class ProfileController extends AbstractUserController {
     static final String REST_URL = "/api/profile";
 
     @GetMapping
-    @Cacheable(value = "users", key = "#authUser.id()")
     public User get(@AuthenticationPrincipal AuthUser authUser) {
         log.info("get {}", authUser);
         return authUser.getUser();
@@ -37,7 +33,6 @@ public class ProfileController extends AbstractUserController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CacheEvict(value = "users", key = "#authUser.id()")
     public void delete(@AuthenticationPrincipal AuthUser authUser) {
         super.delete(authUser.id());
     }
@@ -55,7 +50,6 @@ public class ProfileController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @CachePut(value = "users", key = "#authUser.id()")
     public void update(@RequestBody @Valid UserTo userTo, @AuthenticationPrincipal AuthUser authUser) {
         log.info("update {} with id={}", userTo, authUser.id());
         assureIdConsistent(userTo, authUser.id());

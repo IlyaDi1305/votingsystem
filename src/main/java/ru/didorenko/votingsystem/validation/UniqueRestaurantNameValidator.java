@@ -19,4 +19,11 @@ public class UniqueRestaurantNameValidator {
             throw new IllegalArgumentException(EXCEPTION_DUPLICATE_NAME);
         }
     }
+
+    public void validate(String name) {
+        Restaurant existingRestaurant = repository.findByNameIgnoreCase(name);
+        if (existingRestaurant != null) {
+            throw new IllegalArgumentException(EXCEPTION_DUPLICATE_NAME);
+        }
+    }
 }

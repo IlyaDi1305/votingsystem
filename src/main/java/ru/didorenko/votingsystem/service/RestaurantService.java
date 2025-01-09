@@ -22,13 +22,12 @@ public class RestaurantService {
 
     private final UniqueRestaurantNameValidator nameValidator;
 
-    @Cacheable(value = "restaurants", key = "#id")
     public RestaurantTo getExisted(int id) {
         return createTo(repository.getExisted(id));
     }
 
-    public RestaurantTo getExistedByName(String name) {
-        return createTo(repository.findByNameIgnoreCase(name));
+    public RestaurantTo getByName(String name) {
+        return createTo(repository.getExistedByName(name));
     }
 
     @Cacheable(value = "restaurantsAll")
@@ -36,21 +35,20 @@ public class RestaurantService {
         return createToList(repository.findAll());
     }
 
-    @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
+    @CacheEvict(value = "restaurantsAll", allEntries = true)
     public RestaurantTo create(String name) {
-        nameValidator.validate(name,null);
+        nameValidator.validate(name);
         return createTo(repository.save(RestaurantUtil.createNewWithName(name)));
     }
 
-    @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
+    @CacheEvict(value = "restaurantsAll", allEntries = true)
     public Restaurant update(int id, String newName) {
         nameValidator.validate(newName, id);
-        Restaurant existingRestaurant = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Restaurant with id '" + id + "' not found"));
+        Restaurant existingRestaurant = repository.getExisted(id);
         return repository.save(RestaurantUtil.updateWithName(existingRestaurant, newName));
     }
 
-    @CacheEvict(value = {"restaurants", "restaurantsByName", "restaurantsAll"}, allEntries = true)
+    @CacheEvict(value = "restaurantsAll", allEntries = true)
     public void delete(int id) {
         repository.deleteExisted(id);
     }

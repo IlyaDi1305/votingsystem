@@ -2,8 +2,6 @@ package ru.didorenko.votingsystem.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.didorenko.votingsystem.common.error.DuplicateVoteException;
@@ -21,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.didorenko.votingsystem.utill.TimeUtill.getCurrentTime;
 import static ru.didorenko.votingsystem.utill.VoteUtil.createToList;
 import static ru.didorenko.votingsystem.validation.VoteValidator.validateDeadline;
 
@@ -34,16 +33,15 @@ public class VoteService {
 
     private final UserRepository userRepository;
 
-    @Cacheable(value = "votesByUser", key = "#userId")
     public List<VoteTo> getAllByUserId(int userId) {
-        return createToList(voteRepository.getAllByUserId(userId));
+        List<Vote> votes = voteRepository.getExistedByUserId(userId);
+        return createToList(votes);
     }
 
     @Transactional
-    @CacheEvict(value = "votesByUser", key = "#userId", allEntries = true)
     public Vote createVote(int restaurantId, int userId) {
         LocalDate today = LocalDate.now();
-        LocalTime todayTime = LocalTime.now();
+        LocalTime todayTime = getCurrentTime();
         if (voteRepository.findByUserIdAndVoteDate(userId, today) != null) {
             throw new DuplicateVoteException("Vote already exists for today. Use PUT to update.");
         }
@@ -65,15 +63,11 @@ public class VoteService {
     }
 
     @Transactional
-    @CacheEvict(value = "votesByUser", key = "#userId", allEntries = true)
     public void updateVote(int restaurantId, int userId) {
         LocalDate today = LocalDate.now();
-        LocalTime todayTime = LocalTime.now();
+        LocalTime todayTime = getCurrentTime();
         validateDeadline(todayTime);
-        Vote vote = voteRepository.findByUserIdAndVoteDate(userId, today);
-        if (vote == null) {
-            throw new NotFoundException("Vote not found");
-        }
+        Vote vote = voteRepository.getExistedByUserIdAndVoteDate(userId, today);
         try {
             Restaurant restaurantProxy = restaurantRepository.getReferenceById(restaurantId);
             voteRepository.save(VoteUtil.setVote(vote, restaurantProxy, todayTime));

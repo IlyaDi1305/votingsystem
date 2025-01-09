@@ -1,17 +1,19 @@
 package ru.didorenko.votingsystem.service;
 
-import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.didorenko.votingsystem.common.error.NotFoundException;
 import ru.didorenko.votingsystem.model.MenuItem;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.repository.MenuItemRepository;
+import ru.didorenko.votingsystem.repository.RestaurantRepository;
 import java.time.LocalDate;
 import java.util.List;
-
-import static ru.didorenko.votingsystem.utill.MenuItemUtil.setWithoutRestaurant;
 
 @Service
 @RequiredArgsConstructor
@@ -19,39 +21,50 @@ public class MenuItemService {
 
     private final MenuItemRepository repository;
 
-    private final EntityManager entityManager;
+    private final RestaurantRepository restaurantRepository;
 
-    public List<MenuItem> findAllByDate(LocalDate date) {
-        return repository.findAllByDateWithRestaurant(date);
+    @Cacheable(value = "allMenuItemsByDate", key = "#date")
+    public List<MenuItem> getAllByDate(LocalDate date) {
+        return repository.getAllExistedByDate(date);
     }
 
-    @Cacheable(value = "menuItems", key = "#id + '_' + #restaurantId")
-    public MenuItem getExistedByRestaurant(int id, int restaurantId) {
-        return repository.getExistedByRestaurant(id, restaurantId);
+    public MenuItem getByIdMenuItems(int id) {
+        return repository.getExistedById(id);
     }
 
     @Cacheable(value = "menuItemsByDate", key = "#restaurantId + '_' + #date")
-    public List<MenuItem> findAllByRestaurantIdAndDishDate(int restaurantId, LocalDate date) {
-        return repository.findAllByRestaurantIdAndDishDate(restaurantId, date);
+    public List<MenuItem> getAllByRestaurantIdAndMenuItemDate(int restaurantId, LocalDate date) {
+        return repository.getExistedByRestaurantIdAndMenuItemDate(restaurantId, date);
     }
 
-    @CacheEvict(value = {"menuItems", "menuItemsByDate"}, allEntries = true)
-    public void deleteExistedByRestaurant(int id, int restaurantId) {
-        repository.deleteExistedByRestaurant(id, restaurantId);
+    @CacheEvict(value = "menuItemsByDate", allEntries = true)
+    public void delete(int id) {
+        repository.deleteExisted(id);
     }
 
-    @CacheEvict(value = {"menuItems", "menuItemsByDate"}, allEntries = true)
+    @Transactional
+    @CacheEvict(value = {"menuItemsByDate", "allMenuItemsByDate"}, allEntries = true)
     public MenuItem create(MenuItem menuItem, int restaurantId) {
-        menuItem.setRestaurant(entityManager.getReference(Restaurant.class, restaurantId));
-        return repository.save(menuItem);
+        try {
+            Restaurant restaurantProxy = restaurantRepository.getReferenceById(restaurantId);
+            Hibernate.initialize(restaurantProxy);
+            menuItem.setRestaurant(restaurantProxy);
+            return repository.save(menuItem);
+        } catch (EntityNotFoundException e) {
+            throw new NotFoundException("Restaurant with id " + restaurantId + " does not exist.");
+        }
     }
 
-    @CacheEvict(value = {"menuItems", "menuItemsByDate"}, allEntries = true)
-    public void update(MenuItem menuItem, int restaurantId, int id) {
-        MenuItem existingMenuItem = repository.getExistedByRestaurant(id, restaurantId);
-        if (!existingMenuItem.getRestaurant().getId().equals(restaurantId)) {
-            throw new IllegalArgumentException("Cannot change the restaurant of a MenuItem");
+    @Transactional
+    @CacheEvict(value = {"menuItemsByDate", "allMenuItemsByDate"}, allEntries = true)
+    public void update(MenuItem menuItem, int restaurantId) {
+        try {
+            Restaurant restaurant = restaurantRepository.getReferenceById(restaurantId);
+            Hibernate.initialize(restaurant);
+            menuItem.setRestaurant(restaurant);
+            repository.save(menuItem);
+        } catch (EntityNotFoundException e) {
+            throw new NotFoundException("Restaurant with id " + restaurantId + " does not exist.");
         }
-        repository.save(setWithoutRestaurant(menuItem));
     }
 }

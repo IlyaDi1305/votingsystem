@@ -29,6 +29,6 @@ public abstract class AbstractRestaurantController {
     @GetMapping("/by-name")
     public RestaurantTo getByName(@RequestParam String name) {
         log.info("get restaurant by name {}", name);
-        return restaurantService.getExistedByName(name);
+        return restaurantService.getByName(name);
     }
 }

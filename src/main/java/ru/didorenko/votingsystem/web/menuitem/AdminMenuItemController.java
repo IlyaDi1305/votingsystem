@@ -2,6 +2,7 @@ package ru.didorenko.votingsystem.web.menuitem;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,30 +10,40 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.common.validation.ValidationUtil;
 import ru.didorenko.votingsystem.model.MenuItem;
-import ru.didorenko.votingsystem.service.MenuItemService;
 import ru.didorenko.votingsystem.web.restaurant.AdminRestaurantController;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping(value = AdminMenuItemController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminMenuItemController extends AbstractMenuItemController {
 
-    static final String REST_URL = AdminRestaurantController.REST_URL + "/{restaurantId}/menuItems";
+    static final String REST_URL = AdminRestaurantController.REST_URL;
 
-    public AdminMenuItemController(MenuItemService menuItemService) {
-        super(menuItemService);
+    @GetMapping("/menuItems/all-by-date/{date}")
+    public List<MenuItem> getAllMenuByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        log.info("get All menu by date {}", date);
+        return menuItemService.getAllByDate(date);
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping("/{restaurantId}/menuItem/by-date/{date}")
+    public List<MenuItem> getALlByRestaurantIdAndDate(@PathVariable int restaurantId,
+                                           @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        log.info("get menu for restaurant {} on date {}", restaurantId, date);
+        return menuItemService.getAllByRestaurantIdAndMenuItemDate(restaurantId, date);
+    }
+
+    @DeleteMapping("/menuItems/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id, @PathVariable int restaurantId) {
-        log.info("delete menu item {} for restaurant {}", id, restaurantId);
-        menuItemService.deleteExistedByRestaurant(id, restaurantId);
+    public void delete(@PathVariable int id) {
+        log.info("delete menu item {} ", id);
+        menuItemService.delete(id);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/{restaurantId}/menuItems", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MenuItem> createWithLocation(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId) {
         log.info("create {}", menuItem);
         ValidationUtil.checkNew(menuItem);
@@ -43,11 +54,11 @@ public class AdminMenuItemController extends AbstractMenuItemController {
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{restaurantId}/menuItems/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId, @PathVariable int id) {
-        ValidationUtil.assureIdConsistent(menuItem, id);
-        log.info("update menu item {} with id={} for restaurant {}", menuItem, id, restaurantId);
-        menuItemService.update(menuItem, restaurantId, id);
+    public void update(@Valid @RequestBody MenuItem menuItem, @PathVariable int restaurantId) {
+        ValidationUtil.assureIdConsistent(menuItem, restaurantId);
+        log.info("update menu item {} for restaurant {}", menuItem, restaurantId);
+        menuItemService.update(menuItem, restaurantId);
     }
 }
