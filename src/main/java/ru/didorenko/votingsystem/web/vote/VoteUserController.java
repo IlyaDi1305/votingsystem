@@ -7,10 +7,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.didorenko.votingsystem.app.AuthUser;
 import ru.didorenko.votingsystem.service.VoteService;
 import ru.didorenko.votingsystem.to.VoteTo;
 import ru.didorenko.votingsystem.utill.VoteUtil;
+
+import java.net.URI;
 import java.util.List;
 
 @Slf4j
@@ -28,12 +31,21 @@ public class VoteUserController {
         return voteService.getAllByUserId(user.id());
     }
 
+    @GetMapping("/{id}")
+    public VoteTo getById(@PathVariable int id){
+        return voteService.getExistedById(id);
+    }
+
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<VoteTo> createVoteWi(@RequestParam Integer restaurantId,
-                                               @AuthenticationPrincipal AuthUser user) {
+    public ResponseEntity<VoteTo> createVoteWithLocation(@RequestParam Integer restaurantId,
+                                                         @AuthenticationPrincipal AuthUser user) {
         log.info("Creating vote for restaurantId {} by user with id {}", restaurantId, user.id());
-        return ResponseEntity.ok(VoteUtil.createTo(voteService.createVote(restaurantId, user.id())));
+        VoteTo voteTo = VoteUtil.createTo(voteService.createVote(restaurantId, user.id()));
+        URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(REST_URL + "/{id}")
+                .buildAndExpand(voteTo.getId())
+                .toUri();
+        return ResponseEntity.created(uriOfNewResource).body(voteTo);  // Добавляем тело ответа
     }
 
     @PutMapping

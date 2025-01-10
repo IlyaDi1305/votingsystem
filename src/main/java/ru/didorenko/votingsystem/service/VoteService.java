@@ -19,7 +19,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.didorenko.votingsystem.utill.TimeUtill.getCurrentTime;
+import static ru.didorenko.votingsystem.utill.DateTimeUtil.getCurrentTime;
+import static ru.didorenko.votingsystem.utill.DateTimeUtil.getLocalDate;
+import static ru.didorenko.votingsystem.utill.VoteUtil.createTo;
 import static ru.didorenko.votingsystem.utill.VoteUtil.createToList;
 import static ru.didorenko.votingsystem.validation.VoteValidator.validateDeadline;
 
@@ -33,6 +35,11 @@ public class VoteService {
 
     private final UserRepository userRepository;
 
+    public VoteTo getExistedById(int id){
+        Vote vote = voteRepository.getExisted(id);
+        return createTo(vote);
+    }
+
     public List<VoteTo> getAllByUserId(int userId) {
         List<Vote> votes = voteRepository.getExistedByUserId(userId);
         return createToList(votes);
@@ -40,8 +47,8 @@ public class VoteService {
 
     @Transactional
     public Vote createVote(int restaurantId, int userId) {
-        LocalDate today = LocalDate.now();
-        LocalTime todayTime = getCurrentTime();
+        LocalDate today = getLocalDate();
+        LocalTime currentTime = getCurrentTime();
         if (voteRepository.findByUserIdAndVoteDate(userId, today) != null) {
             throw new DuplicateVoteException("Vote already exists for today. Use PUT to update.");
         }
@@ -59,7 +66,7 @@ public class VoteService {
         } catch (EntityNotFoundException e) {
             throw new NotFoundException("User with id " + userId + " does not exist.");
         }
-        return voteRepository.save(new Vote(userProxy, restaurantProxy, today, todayTime));
+        return voteRepository.save(new Vote(userProxy, restaurantProxy, today, currentTime));
     }
 
     @Transactional

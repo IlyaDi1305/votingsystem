@@ -1,18 +1,17 @@
 package ru.didorenko.votingsystem.web.restaurant;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.didorenko.votingsystem.service.RestaurantService;
 import ru.didorenko.votingsystem.to.RestaurantTo;
-
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 public abstract class AbstractRestaurantController {
 
-    protected final RestaurantService restaurantService;
+    @Autowired
+    protected RestaurantService restaurantService;
 
     @GetMapping("/{id}")
     public RestaurantTo get(@PathVariable int id) {

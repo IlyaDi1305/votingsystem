@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import ru.didorenko.votingsystem.service.RestaurantService;
 import ru.didorenko.votingsystem.to.RestaurantTo;
 import ru.didorenko.votingsystem.utill.RestaurantUtil;
 
@@ -18,11 +17,7 @@ import java.net.URI;
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminRestaurantController extends AbstractRestaurantController {
 
-    public static final String REST_URL = "api/admin/restaurants";
-
-    public AdminRestaurantController(RestaurantService restaurantService) {
-        super(restaurantService);
-    }
+    public static final String REST_URL = "/api/admin/restaurants";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

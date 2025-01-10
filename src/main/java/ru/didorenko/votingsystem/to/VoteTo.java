@@ -1,17 +1,15 @@
 package ru.didorenko.votingsystem.to;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.didorenko.votingsystem.common.to.BaseTo;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+//@EqualsAndHashCode(callSuper = true)
 @ToString
+@NoArgsConstructor
 public class VoteTo extends BaseTo {
 
     private LocalDate date;

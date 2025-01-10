@@ -24,7 +24,7 @@ public interface VoteRepository extends BaseRepository<Vote> {
     }
 
     @Query("SELECT v FROM Vote v WHERE v.user.id = :userId AND v.voteDate = :date")
-    Vote findByUserIdAndVoteDate(Integer userId,LocalDate date);
+    Vote findByUserIdAndVoteDate(Integer userId, LocalDate date);
 
     default Vote getExistedByUserIdAndVoteDate(Integer userId, LocalDate date) {
         Vote vote = findByUserIdAndVoteDate(userId, date);
