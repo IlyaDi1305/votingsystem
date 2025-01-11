@@ -6,15 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.didorenko.votingsystem.common.error.DuplicateVoteException;
 import ru.didorenko.votingsystem.common.error.NotFoundException;
-import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.model.User;
 import ru.didorenko.votingsystem.model.Vote;
 import ru.didorenko.votingsystem.repository.RestaurantRepository;
-import ru.didorenko.votingsystem.repository.UserRepository;
 import ru.didorenko.votingsystem.repository.VoteRepository;
 import ru.didorenko.votingsystem.to.VoteTo;
 import ru.didorenko.votingsystem.utill.VoteUtil;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -33,10 +30,11 @@ public class VoteService {
 
     private final RestaurantRepository restaurantRepository;
 
-    private final UserRepository userRepository;
-
-    public VoteTo getExistedById(int id){
+    public VoteTo getExistedById(int id, int userId) {
         Vote vote = voteRepository.getExisted(id);
+        if (vote.getUser().getId() != userId) {
+            throw new IllegalArgumentException("Access denied: the vote does not belong to the current user.");
+        }
         return createTo(vote);
     }
 
@@ -46,38 +44,29 @@ public class VoteService {
     }
 
     @Transactional
-    public Vote createVote(int restaurantId, int userId) {
+    public Vote createVote(int restaurantId, User user) {
         LocalDate today = getLocalDate();
         LocalTime currentTime = getCurrentTime();
-        if (voteRepository.findByUserIdAndVoteDate(userId, today) != null) {
+        if (voteRepository.findByUserIdAndVoteDate(user.id(), today) != null) {
             throw new DuplicateVoteException("Vote already exists for today. Use PUT to update.");
         }
-
-        Restaurant restaurantProxy;
         try {
-            restaurantProxy = restaurantRepository.getReferenceById(restaurantId);
+            return voteRepository.save(new Vote
+                    (user, restaurantRepository.getReferenceById(restaurantId), today, currentTime));
         } catch (EntityNotFoundException e) {
             throw new NotFoundException("Restaurant with id " + restaurantId + " does not exist.");
         }
-
-        User userProxy;
-        try {
-            userProxy = userRepository.getReferenceById(userId);
-        } catch (EntityNotFoundException e) {
-            throw new NotFoundException("User with id " + userId + " does not exist.");
-        }
-        return voteRepository.save(new Vote(userProxy, restaurantProxy, today, currentTime));
     }
 
     @Transactional
-    public void updateVote(int restaurantId, int userId) {
+    public void updateVote(int restaurantId, User user) {
         LocalDate today = LocalDate.now();
         LocalTime todayTime = getCurrentTime();
         validateDeadline(todayTime);
-        Vote vote = voteRepository.getExistedByUserIdAndVoteDate(userId, today);
+        Vote vote = voteRepository.getExistedByUserIdAndVoteDate(user.id(), today);
         try {
-            Restaurant restaurantProxy = restaurantRepository.getReferenceById(restaurantId);
-            voteRepository.save(VoteUtil.setVote(vote, restaurantProxy, todayTime));
+            voteRepository.save(VoteUtil.setVote
+                    (vote, restaurantRepository.getReferenceById(restaurantId), todayTime, user));
         } catch (EntityNotFoundException e) {
             throw new NotFoundException("Restaurant with id " + restaurantId + " does not exist");
         }

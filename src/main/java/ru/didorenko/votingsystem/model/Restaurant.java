@@ -1,6 +1,5 @@
 package ru.didorenko.votingsystem.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -9,7 +8,6 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import ru.didorenko.votingsystem.common.model.BaseEntity;
-
 import java.util.List;
 
 @Entity
@@ -23,7 +21,6 @@ public class Restaurant extends BaseEntity {
     @Size(min = 2, max = 128)
     private String name;
 
-    @JsonBackReference
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "restaurant")
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<MenuItem> menuItems;

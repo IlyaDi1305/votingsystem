@@ -24,7 +24,7 @@ import static ru.didorenko.votingsystem.web.vote.VoteTestData.VOTE_MATCHER;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class VoteUserControllerTest extends AbstractTest {
+class UserVoteControllerTest extends AbstractTest {
 
     @Autowired
     VoteRepository voteRepository;
@@ -32,7 +32,7 @@ class VoteUserControllerTest extends AbstractTest {
     @Test
     @WithUserDetails(value = UserTestData.USER_MAIL)
     void getAllByUserId() throws Exception {
-        perform(get(VoteUserController.REST_URL))
+        perform(get(UserVoteController.REST_URL))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(VOTE_MATCHER.contentJson(List.of(VoteTestData.voteTo1)));
@@ -45,7 +45,7 @@ class VoteUserControllerTest extends AbstractTest {
             dateUtilMockedStatic.when(DateTimeUtil::getLocalDate).thenReturn(LocalDate.now()
                     .plusDays(1));
             dateUtilMockedStatic.when(DateTimeUtil::getCurrentTime).thenReturn(LocalTime.now());
-            perform(post(VoteUserController.REST_URL)
+            perform(post(UserVoteController.REST_URL)
                     .param("restaurantId", "1"))
                     .andExpect(status().isCreated());
         }
@@ -56,7 +56,7 @@ class VoteUserControllerTest extends AbstractTest {
     public void testUpdateVoteBeForDeadline() throws Exception {
         try (MockedStatic<DateTimeUtil> timeUtilMockedStatic = mockStatic(DateTimeUtil.class)) {
             timeUtilMockedStatic.when(DateTimeUtil::getCurrentTime).thenReturn(LocalTime.of(10, 59));
-            perform(put(VoteUserController.REST_URL)
+            perform(put(UserVoteController.REST_URL)
                     .param("restaurantId", "3")
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNoContent());
@@ -70,7 +70,7 @@ class VoteUserControllerTest extends AbstractTest {
     public void testUpdateVoteAfterDeadline() throws Exception {
         try (MockedStatic<DateTimeUtil> timeUtilMockedStatic = mockStatic(DateTimeUtil.class)) {
             timeUtilMockedStatic.when(DateTimeUtil::getCurrentTime).thenReturn(LocalTime.of(11, 1));
-            perform(put(VoteUserController.REST_URL)
+            perform(put(UserVoteController.REST_URL)
                     .param("restaurantId", "3")
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isUnprocessableEntity());

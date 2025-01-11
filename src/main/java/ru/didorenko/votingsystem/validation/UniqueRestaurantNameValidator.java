@@ -13,14 +13,14 @@ public class UniqueRestaurantNameValidator {
 
     private final RestaurantRepository repository;
 
-    public void validate(String name, Integer id) {
+    public void nameValidator(String name, Integer id) {
         Restaurant existingRestaurant = repository.findByNameIgnoreCase(name);
         if (existingRestaurant != null && (id == null || !existingRestaurant.getId().equals(id))) {
             throw new IllegalArgumentException(EXCEPTION_DUPLICATE_NAME);
         }
     }
 
-    public void validate(String name) {
+    public void nameValidator(String name) {
         Restaurant existingRestaurant = repository.findByNameIgnoreCase(name);
         if (existingRestaurant != null) {
             throw new IllegalArgumentException(EXCEPTION_DUPLICATE_NAME);

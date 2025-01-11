@@ -1,5 +1,6 @@
 package ru.didorenko.votingsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +13,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import ru.didorenko.votingsystem.common.model.NamedEntity;
 import ru.didorenko.votingsystem.common.validation.NoHtml;
-
 import java.time.LocalDate;
 
 @Entity
@@ -36,6 +36,7 @@ public class MenuItem extends NamedEntity {
     @NotNull
     private LocalDate menuItemDate;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "restaurant_id")

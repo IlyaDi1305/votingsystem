@@ -12,7 +12,6 @@ import ru.didorenko.votingsystem.app.AuthUser;
 import ru.didorenko.votingsystem.utill.UsersUtil;
 import ru.didorenko.votingsystem.model.User;
 import ru.didorenko.votingsystem.to.UserTo;
-
 import java.net.URI;
 
 import static ru.didorenko.votingsystem.common.validation.ValidationUtil.assureIdConsistent;

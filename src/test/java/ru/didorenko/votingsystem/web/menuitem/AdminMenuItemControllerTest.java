@@ -26,22 +26,6 @@ class AdminMenuItemControllerTest extends AbstractTest {
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
-    public void testGetAllMenuByDate() throws Exception {
-        perform(get(AdminMenuItemController.REST_URL + "/menuItems/all-by-date/{date}", LocalDate.now()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
-    public void testGetAllByRestaurantIdAndDate() throws Exception {
-        perform(get(AdminMenuItemController.REST_URL + "/{restaurantId}/menuItem/by-date/{date}", 1, LocalDate.now()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    @WithUserDetails(value = ADMIN_MAIL)
     public void testCreateMenuItem() throws Exception {
         String newMenuItemJson = """
                 {

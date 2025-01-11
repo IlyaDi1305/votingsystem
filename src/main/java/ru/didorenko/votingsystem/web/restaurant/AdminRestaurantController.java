@@ -1,31 +1,47 @@
 package ru.didorenko.votingsystem.web.restaurant;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import ru.didorenko.votingsystem.model.Restaurant;
+import ru.didorenko.votingsystem.service.RestaurantService;
 import ru.didorenko.votingsystem.to.RestaurantTo;
 import ru.didorenko.votingsystem.utill.RestaurantUtil;
-
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = AdminRestaurantController.REST_URL, produces = MediaType.APPLICATION_JSON_VALUE)
-public class AdminRestaurantController extends AbstractRestaurantController {
+public class AdminRestaurantController {
+
+    private final RestaurantService restaurantService;
 
     public static final String REST_URL = "/api/admin/restaurants";
 
+    @GetMapping("/menuItem/by-date")
+    public List<Restaurant> getAllWithMenuByDate(LocalDate menuItemDate) {
+        return restaurantService.getAllWithMenuItemByDate(menuItemDate);
+    }
+
+    @GetMapping("/menuItem")
+    public List<Restaurant> getAllWithMenu() {
+        return restaurantService.getAllWithMenuItem();
+    }
+
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<RestaurantTo> createWithLocation(@RequestBody @Valid RestaurantTo restaurantTo) {
         log.info("create restaurant with name: {}", restaurantTo.getName());
         RestaurantTo result = restaurantService.create(restaurantTo.getName());
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(REST_URL)
+                .path(REST_URL + "/{id}")
                 .buildAndExpand(result.getId()).toUri();
         return ResponseEntity.created(uriOfNewResource).body(result);
     }

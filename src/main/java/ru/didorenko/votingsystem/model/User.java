@@ -14,7 +14,6 @@ import org.springframework.lang.NonNull;
 import ru.didorenko.votingsystem.common.HasIdAndEmail;
 import ru.didorenko.votingsystem.common.model.NamedEntity;
 import ru.didorenko.votingsystem.common.validation.NoHtml;
-
 import java.util.*;
 
 @Entity
