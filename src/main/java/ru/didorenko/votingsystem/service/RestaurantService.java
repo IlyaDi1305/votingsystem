@@ -33,15 +33,15 @@ public class RestaurantService {
         return repository.getAllWithMenuItem();
     }
 
-    public RestaurantTo getExisted(int id) {
+    public RestaurantTo getExistedById(int id) {
         return createTo(repository.getExisted(id));
     }
 
-    public RestaurantTo getByName(String name) {
+    public RestaurantTo getByNameWithoutMenuItems(String name) {
         return createTo(repository.getExistedByName(name));
     }
 
-    public List<RestaurantTo> getAllTo() {
+    public List<RestaurantTo> getAllWithoutMenuItems() {
         return createToList(repository.findAll());
     }
 

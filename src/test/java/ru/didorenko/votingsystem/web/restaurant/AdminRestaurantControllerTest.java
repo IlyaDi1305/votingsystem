@@ -11,12 +11,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.didorenko.votingsystem.AbstractTest;
 import ru.didorenko.votingsystem.model.Restaurant;
 import ru.didorenko.votingsystem.repository.RestaurantRepository;
-import java.util.List;
+import ru.didorenko.votingsystem.web.user.UserTestData;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static ru.didorenko.votingsystem.web.restaurant.RestaurantTestData.*;
 import static ru.didorenko.votingsystem.web.user.UserTestData.ADMIN_MAIL;
 
 @SpringBootTest
@@ -27,6 +26,25 @@ class AdminRestaurantControllerTest extends AbstractTest {
 
     @Autowired
     RestaurantRepository restaurantRepository;
+
+    @Test
+    @WithUserDetails(value = UserTestData.ADMIN_MAIL)
+    void getAllWithMenuByDate() throws Exception {
+        perform(get(REST_URL + "/menuItems/by-date")
+                .param("menuItemDate", TEST_DATE.toString()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(RestaurantTestData.RESTAURANT_MATCHER.contentJson(RESTAURANTS));
+    }
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    void getAllWithMenu() throws Exception {
+        perform(get(REST_URL + "/menuItems"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(RestaurantTestData.RESTAURANT_MATCHER.contentJson(RESTAURANTS_PLUS_DAY));
+    }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
@@ -42,11 +60,10 @@ class AdminRestaurantControllerTest extends AbstractTest {
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", org.hamcrest.Matchers.containsString(REST_URL)))
                 .andExpect(jsonPath("$.name").value("New Restaurant"));
-        List<Restaurant> restaurants = restaurantRepository.findAll();
-        Restaurant createdMenuItem = restaurants.stream()
+        Restaurant createdMenuItem = restaurantRepository.findAll().stream()
                 .filter(restaurant -> "New Restaurant".equals(restaurant.getName()))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("Новый ресторан не найден"));
+                .orElseThrow(() -> new AssertionError("No new restaurant found"));
         Assertions.assertEquals("New Restaurant", createdMenuItem.getName());
     }
 
@@ -62,8 +79,7 @@ class AdminRestaurantControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updatedRestaurantJson))
                 .andExpect(status().isNoContent());
-        Restaurant restaurant = restaurantRepository.findById(1).orElseThrow();
-        Assertions.assertEquals("Updated Restaurant", restaurant.getName());
+        Assertions.assertEquals("Updated Restaurant", restaurantRepository.findById(1).orElseThrow().getName());
     }
 
     @Test
@@ -71,6 +87,6 @@ class AdminRestaurantControllerTest extends AbstractTest {
     void delete() throws Exception {
         perform(MockMvcRequestBuilders.delete(REST_URL + "/{id}", 1))
                 .andExpect(status().isNoContent());
-        Assertions.assertFalse(restaurantRepository.existsById(1),"Ресторан должен быть удалено");
+        Assertions.assertFalse(restaurantRepository.existsById(1), "The restaurant should be removed");
     }
 }

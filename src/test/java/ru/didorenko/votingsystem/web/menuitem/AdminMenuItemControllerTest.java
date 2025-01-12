@@ -3,26 +3,33 @@ package ru.didorenko.votingsystem.web.menuitem;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import ru.didorenko.votingsystem.AbstractTest;
 import ru.didorenko.votingsystem.model.MenuItem;
 import ru.didorenko.votingsystem.repository.MenuItemRepository;
 import java.time.LocalDate;
-import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static ru.didorenko.votingsystem.web.user.UserTestData.ADMIN_MAIL;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 class AdminMenuItemControllerTest extends AbstractTest {
+
+    public static final String REST_URL = AdminMenuItemController.REST_URL;
 
     @Autowired
     MenuItemRepository menuItemRepository;
+
+    @Test
+    @WithUserDetails(value = ADMIN_MAIL)
+    public void getById() throws Exception {
+        perform(get(REST_URL + "/menuItems/{id}", 1)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(1));
+    }
 
     @Test
     @WithUserDetails(value = ADMIN_MAIL)
@@ -40,11 +47,10 @@ class AdminMenuItemControllerTest extends AbstractTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(newMenuItemJson))
                 .andExpect(status().isCreated());
-        List<MenuItem> menuItems = menuItemRepository.getAllExistedByDate(LocalDate.now());
-        MenuItem createdMenuItem = menuItems.stream()
+        MenuItem createdMenuItem = menuItemRepository.getAllExistedByDate(LocalDate.now()).stream()
                 .filter(menuItem -> "New Dish".equals(menuItem.getName()))
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("Новое блюдо не найдено"));
+                .orElseThrow(() -> new AssertionError("No new dish found"));
         Assertions.assertEquals(150, createdMenuItem.getPrice());
     }
 
@@ -75,6 +81,6 @@ class AdminMenuItemControllerTest extends AbstractTest {
     public void testDeleteMenuItem() throws Exception {
         perform(delete(AdminMenuItemController.REST_URL + "/menuItems/{id}", 1))
                 .andExpect(status().isNoContent());
-        Assertions.assertFalse(menuItemRepository.existsById(1), "Блюдо должно быть удалено");
+        Assertions.assertFalse(menuItemRepository.existsById(1), "The dish must be removed");
     }
 }

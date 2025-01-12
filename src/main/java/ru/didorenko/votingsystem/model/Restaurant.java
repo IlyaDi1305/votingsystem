@@ -30,6 +30,12 @@ public class Restaurant extends BaseEntity {
         this.name = name;
     }
 
+    public Restaurant(Integer id, String name, List<MenuItem> menuItems) {
+        super(id);
+        this.name = name;
+        this.menuItems = menuItems;
+    }
+
     @Override
     public String toString() {
         return "Restaurant{" +

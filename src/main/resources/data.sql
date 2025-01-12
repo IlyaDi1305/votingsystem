@@ -16,10 +16,12 @@ VALUES ('McDonalds'),
 INSERT INTO MENU_ITEM (name, description, price, menu_item_date, restaurant_id)
 VALUES ('Burger', 'brotchen, fleisch', 755, now(), 1),
        ('Cola', 'zuker, wasser', 415, now(), 1),
+       ('Pizza Salami', 'salami', 820, now(), 2),
+       ('Misosup', 'wasser, soya', 1290, now(), 3),
        ('Burger', 'brotchen, fleisch', 755, DATEADD(DAY, 1, NOW()), 1),
        ('Cola', 'zuker, wasser', 415, DATEADD(DAY, 1, NOW()), 1),
-       ('Pizza Salami', 'salami', 820, now(),2),
-       ('Misosup', 'wasser, soya', 1290, now(),3);
+       ('Pizza Salami', 'salami', 820, DATEADD(DAY, 1, NOW()), 2),
+       ('Misosup', 'wasser, soya', 1290, DATEADD(DAY, 1, NOW()), 3);
 
 INSERT INTO VOTE (vote_date, vote_time, user_id, restaurant_id)
 VALUES (now(), '7:30', 1, 1),

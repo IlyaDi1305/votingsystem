@@ -25,7 +25,7 @@ public class AdminMenuItemController {
     static final String REST_URL = AdminRestaurantController.REST_URL;
 
     @GetMapping("/menuItems/{id}")
-    public MenuItem get(@PathVariable int id) {
+    public MenuItem getById(@PathVariable int id) {
         log.info("get menu item id: {}" , id);
         return menuItemService.getByIdMenuItems(id);
     }

@@ -26,12 +26,12 @@ public class AdminRestaurantController {
 
     public static final String REST_URL = "/api/admin/restaurants";
 
-    @GetMapping("/menuItem/by-date")
-    public List<Restaurant> getAllWithMenuByDate(LocalDate menuItemDate) {
+    @GetMapping("/menuItems/by-date")
+    public List<Restaurant> getAllWithMenuByDate(@RequestParam LocalDate menuItemDate) {
         return restaurantService.getAllWithMenuItemByDate(menuItemDate);
     }
 
-    @GetMapping("/menuItem")
+    @GetMapping("/menuItems")
     public List<Restaurant> getAllWithMenu() {
         return restaurantService.getAllWithMenuItem();
     }

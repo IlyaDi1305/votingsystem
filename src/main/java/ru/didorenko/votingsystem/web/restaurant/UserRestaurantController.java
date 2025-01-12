@@ -21,24 +21,24 @@ public class UserRestaurantController {
     public static final String REST_URL = "/api/user/restaurants";
 
     @GetMapping("/{id}")
-    public RestaurantTo get(@PathVariable int id) {
+    public RestaurantTo getByIdWithoutMenuItems(@PathVariable int id) {
         log.info("get restaurant with id {}", id);
-        return restaurantService.getExisted(id);
+        return restaurantService.getExistedById(id);
     }
 
     @GetMapping
-    public List<RestaurantTo> getAll() {
+    public List<RestaurantTo> getAllWithoutMenuItems() {
         log.info("get all restaurants");
-        return restaurantService.getAllTo();
+        return restaurantService.getAllWithoutMenuItems();
     }
 
     @GetMapping("/by-name")
-    public RestaurantTo getByName(@RequestParam String name) {
+    public RestaurantTo getByNameWithoutMenuItems(@RequestParam String name) {
         log.info("get restaurant by name {}", name);
-        return restaurantService.getByName(name);
+        return restaurantService.getByNameWithoutMenuItems(name);
     }
 
-    @GetMapping("/menuItem/today")
+    @GetMapping("/menuItems/today")
     public List<Restaurant> getAllWithMenuToday() {
         return restaurantService.getAllWithMenuItemByDate(LocalDate.now());
     }

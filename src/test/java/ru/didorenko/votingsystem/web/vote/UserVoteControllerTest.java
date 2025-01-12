@@ -6,21 +6,20 @@ import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithUserDetails;
 import ru.didorenko.votingsystem.AbstractTest;
-import ru.didorenko.votingsystem.model.Vote;
 import ru.didorenko.votingsystem.repository.VoteRepository;
 import ru.didorenko.votingsystem.utill.DateTimeUtil;
 import ru.didorenko.votingsystem.web.user.UserTestData;
-
 import java.time.*;
-import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static ru.didorenko.votingsystem.web.user.UserTestData.USER_ID;
 import static ru.didorenko.votingsystem.web.vote.VoteTestData.VOTE_MATCHER;
+import static ru.didorenko.votingsystem.web.vote.VoteTestData.VOTE_TO_1;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -34,8 +33,8 @@ class UserVoteControllerTest extends AbstractTest {
     void getAllByUserId() throws Exception {
         perform(get(UserVoteController.REST_URL))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(VOTE_MATCHER.contentJson(List.of(VoteTestData.voteTo1)));
+                .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
+                .andExpect(VOTE_MATCHER.contentJson(VOTE_TO_1));
     }
 
     @Test
@@ -58,10 +57,10 @@ class UserVoteControllerTest extends AbstractTest {
             timeUtilMockedStatic.when(DateTimeUtil::getCurrentTime).thenReturn(LocalTime.of(10, 59));
             perform(put(UserVoteController.REST_URL)
                     .param("restaurantId", "3")
-                    .contentType(MediaType.APPLICATION_JSON))
+                    .contentType(APPLICATION_JSON))
                     .andExpect(status().isNoContent());
-            Vote updatedVote = voteRepository.findByUserIdAndVoteDate(UserTestData.USER_ID, LocalDate.now());
-            Assertions.assertEquals(3, updatedVote.getRestaurant().getId());
+            Assertions.assertEquals(3, voteRepository
+                    .findByUserIdAndVoteDate(USER_ID, LocalDate.now()).getRestaurant().getId());
         }
     }
 
@@ -72,10 +71,10 @@ class UserVoteControllerTest extends AbstractTest {
             timeUtilMockedStatic.when(DateTimeUtil::getCurrentTime).thenReturn(LocalTime.of(11, 1));
             perform(put(UserVoteController.REST_URL)
                     .param("restaurantId", "3")
-                    .contentType(MediaType.APPLICATION_JSON))
+                    .contentType(APPLICATION_JSON))
                     .andExpect(status().isUnprocessableEntity());
-            Vote updatedVote = voteRepository.findByUserIdAndVoteDate(UserTestData.USER_ID, LocalDate.now());
-            Assertions.assertEquals(1, updatedVote.getRestaurant().getId());
+            Assertions.assertEquals(1, voteRepository
+                    .findByUserIdAndVoteDate(USER_ID, LocalDate.now()).getRestaurant().getId());
         }
     }
 }
